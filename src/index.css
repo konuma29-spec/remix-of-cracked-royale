@@ -1,0 +1,329 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@600;700;800&display=swap');
+
+@layer base {
+  :root {
+    /* Core game colors */
+    --background: 220 20% 12%;
+    --foreground: 45 100% 96%;
+
+    --card: 220 15% 18%;
+    --card-foreground: 45 100% 96%;
+
+    --popover: 220 15% 18%;
+    --popover-foreground: 45 100% 96%;
+
+    /* Player/friendly colors - warm gold */
+    --primary: 45 100% 50%;
+    --primary-foreground: 220 20% 10%;
+
+    /* Enemy colors - cool blue */
+    --secondary: 210 100% 50%;
+    --secondary-foreground: 45 100% 96%;
+
+    /* Elixir - vibrant pink/purple */
+    --accent: 300 80% 55%;
+    --accent-foreground: 45 100% 96%;
+
+    --muted: 220 15% 25%;
+    --muted-foreground: 220 10% 60%;
+
+    --destructive: 0 80% 55%;
+    --destructive-foreground: 45 100% 96%;
+
+    --border: 220 15% 30%;
+    --input: 220 15% 25%;
+    --ring: 45 100% 50%;
+
+    --radius: 0.75rem;
+
+    /* Game-specific colors */
+    --arena-grass: 120 40% 25%;
+    --arena-grass-light: 120 45% 35%;
+    --arena-river: 200 70% 45%;
+    --arena-bridge: 35 40% 35%;
+    
+    --health-full: 120 70% 45%;
+    --health-mid: 45 90% 50%;
+    --health-low: 0 80% 50%;
+    
+    --elixir: 280 80% 55%;
+    --elixir-glow: 280 100% 65%;
+    
+    --tower-friendly: 45 80% 50%;
+    --tower-enemy: 210 80% 50%;
+    
+    --card-common: 220 15% 40%;
+    --card-rare: 210 80% 50%;
+    --card-epic: 280 70% 55%;
+    
+    /* Shadows and effects */
+    --shadow-game: 0 8px 32px -8px rgba(0, 0, 0, 0.5);
+    --shadow-card: 0 4px 16px -4px rgba(0, 0, 0, 0.4);
+    --shadow-glow-gold: 0 0 20px hsl(45 100% 50% / 0.4);
+    --shadow-glow-blue: 0 0 20px hsl(210 100% 50% / 0.4);
+    --shadow-glow-elixir: 0 0 15px hsl(280 80% 55% / 0.5);
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Nunito', sans-serif;
+  }
+}
+
+@layer components {
+  .game-title {
+    font-family: 'Bangers', cursive;
+    letter-spacing: 0.05em;
+    text-shadow: 3px 3px 0 hsl(var(--background)), 
+                 -1px -1px 0 hsl(var(--background));
+  }
+
+  .arena-field {
+    background: linear-gradient(
+      to bottom,
+      hsl(var(--arena-grass)) 0%,
+      hsl(var(--arena-grass-light)) 48%,
+      hsl(var(--arena-river)) 49%,
+      hsl(var(--arena-river)) 51%,
+      hsl(var(--arena-grass-light)) 52%,
+      hsl(var(--arena-grass)) 100%
+    );
+  }
+
+  .tower-base {
+    @apply rounded-lg transition-all duration-200;
+    box-shadow: var(--shadow-game);
+  }
+
+  .tower-friendly {
+    background: linear-gradient(135deg, hsl(45 70% 45%), hsl(35 80% 35%));
+    border: 3px solid hsl(45 90% 60%);
+    box-shadow: var(--shadow-glow-gold);
+  }
+
+  .tower-enemy {
+    background: linear-gradient(135deg, hsl(210 70% 45%), hsl(220 80% 35%));
+    border: 3px solid hsl(210 90% 60%);
+    box-shadow: var(--shadow-glow-blue);
+  }
+
+  .tower-king {
+    @apply relative;
+  }
+
+  .tower-king::before {
+    content: '👑';
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.25rem;
+  }
+
+  .health-bar-container {
+    @apply h-2 rounded-full overflow-hidden;
+    background: hsl(0 0% 20%);
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .health-bar-fill {
+    @apply h-full rounded-full transition-all duration-300;
+    box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2);
+  }
+
+  .health-full {
+    background: linear-gradient(to right, hsl(var(--health-full)), hsl(100 70% 50%));
+  }
+
+  .health-mid {
+    background: linear-gradient(to right, hsl(var(--health-mid)), hsl(35 90% 55%));
+  }
+
+  .health-low {
+    background: linear-gradient(to right, hsl(var(--health-low)), hsl(15 80% 55%));
+    animation: pulse-health 0.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes pulse-health {
+    from { opacity: 0.8; }
+    to { opacity: 1; }
+  }
+
+  .elixir-bar-container {
+    @apply h-6 rounded-full overflow-hidden relative;
+    background: linear-gradient(to bottom, hsl(280 30% 15%), hsl(280 20% 10%));
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+  }
+
+  .elixir-bar-fill {
+    @apply h-full rounded-full transition-all duration-100;
+    background: linear-gradient(to right, hsl(var(--elixir)), hsl(var(--elixir-glow)));
+    box-shadow: var(--shadow-glow-elixir);
+  }
+
+  .elixir-segments {
+    @apply absolute inset-0 flex;
+  }
+
+  .elixir-segment {
+    @apply flex-1 border-r border-white/10;
+  }
+
+  .game-card {
+    @apply rounded-xl overflow-hidden cursor-pointer transition-all duration-200;
+    background: linear-gradient(145deg, hsl(var(--card)), hsl(220 20% 15%));
+    box-shadow: var(--shadow-card);
+  }
+
+  .game-card:hover:not(.disabled) {
+    transform: translateY(-8px) scale(1.05);
+    box-shadow: var(--shadow-game), var(--shadow-glow-gold);
+  }
+
+  .game-card.disabled {
+    @apply opacity-50 cursor-not-allowed;
+    filter: grayscale(0.5);
+  }
+
+  .game-card.selected {
+    @apply ring-4 ring-primary;
+    transform: translateY(-12px) scale(1.08);
+    box-shadow: var(--shadow-game), var(--shadow-glow-gold);
+  }
+
+  .card-cost {
+    @apply absolute top-1 left-1 w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm;
+    background: linear-gradient(135deg, hsl(var(--elixir)), hsl(280 90% 45%));
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .unit-sprite {
+    @apply rounded-full transition-all duration-100;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  }
+
+  .unit-friendly {
+    @apply border-2;
+    border-color: hsl(45 90% 60%);
+    box-shadow: var(--shadow-glow-gold);
+  }
+
+  .unit-enemy {
+    @apply border-2;
+    border-color: hsl(210 90% 60%);
+    box-shadow: var(--shadow-glow-blue);
+  }
+
+  .placement-zone {
+    @apply absolute inset-0 pointer-events-none;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      hsl(45 100% 50% / 0.1) 10px,
+      hsl(45 100% 50% / 0.1) 20px
+    );
+  }
+
+  .placement-zone.active {
+    @apply pointer-events-auto cursor-crosshair;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      hsl(45 100% 50% / 0.2) 10px,
+      hsl(45 100% 50% / 0.2) 20px
+    );
+    animation: pulse-zone 1s ease-in-out infinite;
+  }
+
+  @keyframes pulse-zone {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+
+  .attack-effect {
+    @apply absolute rounded-full;
+    background: radial-gradient(circle, hsl(45 100% 70% / 0.8), transparent);
+    animation: attack-flash 0.2s ease-out forwards;
+  }
+
+  @keyframes attack-flash {
+    0% { transform: scale(0); opacity: 1; }
+    100% { transform: scale(2); opacity: 0; }
+  }
+
+  .game-timer {
+    font-family: 'Bangers', cursive;
+    @apply text-4xl;
+    text-shadow: 2px 2px 0 hsl(var(--background));
+  }
+
+  .winner-overlay {
+    @apply fixed inset-0 flex items-center justify-center z-50;
+    background: rgba(0,0,0,0.8);
+    animation: fade-in 0.3s ease-out;
+  }
+
+  .winner-banner {
+    font-family: 'Bangers', cursive;
+    @apply text-6xl text-center px-12 py-8 rounded-2xl;
+    animation: scale-bounce 0.5s ease-out;
+  }
+
+  @keyframes scale-bounce {
+    0% { transform: scale(0); }
+    70% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes bounce-subtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+  }
+
+  .animate-bounce-subtle {
+    animation: bounce-subtle 1s ease-in-out infinite;
+  }
+
+  /* Evolution orbiting animation */
+  @keyframes orbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes counter-orbit {
+    from { transform: translateX(-50%) rotate(0deg); }
+    to { transform: translateX(-50%) rotate(-360deg); }
+  }
+
+  /* Evolution glow pulse for hand cards */
+  @keyframes evo-glow-pulse {
+    0%, 100% { box-shadow: 0 0 8px 2px rgba(168, 85, 247, 0.4), inset 0 0 4px rgba(168, 85, 247, 0.1); }
+    50% { box-shadow: 0 0 16px 5px rgba(168, 85, 247, 0.7), inset 0 0 8px rgba(168, 85, 247, 0.2); }
+  }
+}
