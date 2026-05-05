@@ -32,6 +32,10 @@ interface MainMenuProps {
 }
 
 export function MainMenu({ progress, onBattle, onDeckBuilder, onCollection, onClan, onShop, onOpenChest, onReset, onOpenProfile, onOpenTrophyRoad, claimedTrophyRewards = [], incomingRequestCount = 0 }: MainMenuProps) {
+  const [gameMode, setGameMode] = useState<GameMode>('Normal');
+  const activeDeck = progress.deckSlots.find(s => s.id === progress.activeDeckId);
+  const topRightCardId = activeDeck?.cardIds[3];
+  const topRightCard = topRightCardId ? getCardById(topRightCardId) : undefined;
   const playerLevel = Math.min(14, Math.floor(progress.wins / 5) + 1);
   const trophies = progress.wins * 30;
   const currentBanner = getBannerById(progress.bannerId);
