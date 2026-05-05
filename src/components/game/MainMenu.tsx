@@ -1,9 +1,20 @@
+import { useState } from 'react';
 import { PlayerProgress } from '@/types/game';
 import { Button } from '@/components/ui/button';
-import { Swords, Trophy, LayoutGrid, Crown, Users, ShoppingBag, Coins, Gift } from 'lucide-react';
+import { Swords, Trophy, LayoutGrid, Crown, Users, ShoppingBag, Coins, Gift, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { getBannerById } from '@/data/banners';
 import { getCurrentArena, ARENAS } from '@/data/arenas';
+import { getCardById } from '@/data/cards';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+const GAME_MODES = ['Normal', 'Platform', 'Mega Draft', 'CHAOS'] as const;
+type GameMode = typeof GAME_MODES[number];
 
 interface MainMenuProps {
   progress: PlayerProgress;
