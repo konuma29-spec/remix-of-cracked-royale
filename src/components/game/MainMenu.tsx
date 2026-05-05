@@ -222,15 +222,57 @@ export function MainMenu({ progress, onBattle, onDeckBuilder, onCollection, onCl
         </div>
       </div>
 
-      {/* Battle Button */}
-      <div className="flex justify-center pb-3">
-        <Button 
+      {/* Battle Button Row */}
+      <div className="flex justify-center items-center gap-2 pb-3 px-4">
+        {/* Decks shortcut */}
+        <button
+          onClick={onDeckBuilder}
+          className="h-12 w-14 rounded-xl bg-gradient-to-b from-blue-500 via-blue-600 to-blue-700 border-b-4 border-blue-900 shadow-lg flex items-center justify-center transform hover:scale-[1.05] transition-all overflow-hidden"
+          aria-label="Battle Decks"
+        >
+          {topRightCard ? (
+            <span className="text-3xl drop-shadow-md">{topRightCard.emoji}</span>
+          ) : (
+            <LayoutGrid className="w-6 h-6 text-white" />
+          )}
+        </button>
+
+        <Button
           onClick={onBattle}
           className="px-12 h-12 text-xl font-bold gap-2 bg-gradient-to-b from-green-500 via-green-600 to-green-700 hover:from-green-400 hover:via-green-500 hover:to-green-600 border-b-4 border-green-900 rounded-xl shadow-lg transform hover:scale-[1.02] transition-all"
         >
           <Swords className="w-6 h-6" />
           Battle
         </Button>
+
+        {/* Game mode selector */}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button
+              className="h-12 w-14 rounded-xl bg-gradient-to-b from-purple-500 via-purple-600 to-purple-700 border-b-4 border-purple-900 shadow-lg flex flex-col items-center justify-center transform hover:scale-[1.05] transition-all"
+              aria-label="Game mode"
+            >
+              <span className="text-[9px] font-bold text-white leading-none uppercase tracking-wide">
+                {gameMode}
+              </span>
+              <ChevronDown className="w-3 h-3 text-white mt-0.5" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="bg-[#0d1b2a] border-cyan-900/50">
+            {GAME_MODES.map((mode) => (
+              <DropdownMenuItem
+                key={mode}
+                onClick={() => setGameMode(mode)}
+                className={cn(
+                  'text-white font-semibold cursor-pointer focus:bg-purple-700/50 focus:text-white',
+                  gameMode === mode && 'bg-purple-800/40'
+                )}
+              >
+                {mode}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {/* Bottom Navigation */}
