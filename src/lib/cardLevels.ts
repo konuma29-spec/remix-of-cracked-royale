@@ -1,4 +1,4 @@
-// Card leveling system - similar to Clash Royale
+// Card leveling system - similar to Cracked Royale
 // Level requirements double each level: 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384
 
 // Copies required to REACH each level (cumulative)
@@ -22,21 +22,21 @@ export const MAX_LEVEL = 15;
 
 // Copies needed to reach each level (index = level - 1)
 export const LEVEL_THRESHOLDS = [
-  0,      // Level 1
-  2,      // Level 2
-  4,      // Level 3
-  8,      // Level 4
-  16,     // Level 5
-  32,     // Level 6
-  64,     // Level 7
-  128,    // Level 8
-  256,    // Level 9
-  512,    // Level 10
-  1024,   // Level 11
-  2048,   // Level 12
-  4096,   // Level 13
-  8192,   // Level 14
-  16384,  // Level 15
+  0, // Level 1
+  2, // Level 2
+  4, // Level 3
+  8, // Level 4
+  16, // Level 5
+  32, // Level 6
+  64, // Level 7
+  128, // Level 8
+  256, // Level 9
+  512, // Level 10
+  1024, // Level 11
+  2048, // Level 12
+  4096, // Level 13
+  8192, // Level 14
+  16384, // Level 15
 ];
 
 /**
@@ -62,22 +62,26 @@ export function getCopiesForNextLevel(currentLevel: number): number {
 /**
  * Get progress towards the next level (0-1)
  */
-export function getLevelProgress(copies: number): { current: number; required: number; progress: number } {
+export function getLevelProgress(copies: number): {
+  current: number;
+  required: number;
+  progress: number;
+} {
   const level = getCardLevel(copies);
-  
+
   if (level >= MAX_LEVEL) {
     return { current: 0, required: 0, progress: 1 };
   }
-  
+
   const currentThreshold = LEVEL_THRESHOLDS[level - 1];
   const nextThreshold = LEVEL_THRESHOLDS[level];
   const copiesInLevel = copies - currentThreshold;
   const copiesNeeded = nextThreshold - currentThreshold;
-  
+
   return {
     current: copiesInLevel,
     required: copiesNeeded,
-    progress: copiesInLevel / copiesNeeded
+    progress: copiesInLevel / copiesNeeded,
   };
 }
 

@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@600;700;800&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@600;700;800&display=swap");
 
 @layer base {
   :root {
@@ -45,21 +45,21 @@
     --arena-grass-light: 120 45% 35%;
     --arena-river: 200 70% 45%;
     --arena-bridge: 35 40% 35%;
-    
+
     --health-full: 120 70% 45%;
     --health-mid: 45 90% 50%;
     --health-low: 0 80% 50%;
-    
+
     --elixir: 280 80% 55%;
     --elixir-glow: 280 100% 65%;
-    
+
     --tower-friendly: 45 80% 50%;
     --tower-enemy: 210 80% 50%;
-    
+
     --card-common: 220 15% 40%;
     --card-rare: 210 80% 50%;
     --card-epic: 280 70% 55%;
-    
+
     /* Shadows and effects */
     --shadow-game: 0 8px 32px -8px rgba(0, 0, 0, 0.5);
     --shadow-card: 0 4px 16px -4px rgba(0, 0, 0, 0.4);
@@ -83,18 +83,26 @@
     @apply border-border;
   }
 
+  html,
+  body {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+  }
+
   body {
     @apply bg-background text-foreground;
-    font-family: 'Nunito', sans-serif;
+    font-family: "Nunito", sans-serif;
   }
 }
 
 @layer components {
   .game-title {
-    font-family: 'Bangers', cursive;
+    font-family: "Bangers", cursive;
     letter-spacing: 0.05em;
-    text-shadow: 3px 3px 0 hsl(var(--background)), 
-                 -1px -1px 0 hsl(var(--background));
+    text-shadow:
+      3px 3px 0 hsl(var(--background)),
+      -1px -1px 0 hsl(var(--background));
   }
 
   .arena-field {
@@ -131,7 +139,7 @@
   }
 
   .tower-king::before {
-    content: '👑';
+    content: "👑";
     position: absolute;
     top: -20px;
     left: 50%;
@@ -142,41 +150,61 @@
   .health-bar-container {
     @apply h-2 rounded-full overflow-hidden;
     background: hsl(0 0% 20%);
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .health-bar-fill {
     @apply h-full rounded-full transition-all duration-300;
-    box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2);
+    box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.2);
   }
 
   .health-full {
-    background: linear-gradient(to right, hsl(var(--health-full)), hsl(100 70% 50%));
+    background: linear-gradient(
+      to right,
+      hsl(var(--health-full)),
+      hsl(100 70% 50%)
+    );
   }
 
   .health-mid {
-    background: linear-gradient(to right, hsl(var(--health-mid)), hsl(35 90% 55%));
+    background: linear-gradient(
+      to right,
+      hsl(var(--health-mid)),
+      hsl(35 90% 55%)
+    );
   }
 
   .health-low {
-    background: linear-gradient(to right, hsl(var(--health-low)), hsl(15 80% 55%));
+    background: linear-gradient(
+      to right,
+      hsl(var(--health-low)),
+      hsl(15 80% 55%)
+    );
     animation: pulse-health 0.5s ease-in-out infinite alternate;
   }
 
   @keyframes pulse-health {
-    from { opacity: 0.8; }
-    to { opacity: 1; }
+    from {
+      opacity: 0.8;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   .elixir-bar-container {
     @apply h-6 rounded-full overflow-hidden relative;
     background: linear-gradient(to bottom, hsl(280 30% 15%), hsl(280 20% 10%));
-    box-shadow: inset 0 2px 8px rgba(0,0,0,0.5);
+    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
   }
 
   .elixir-bar-fill {
     @apply h-full rounded-full transition-all duration-100;
-    background: linear-gradient(to right, hsl(var(--elixir)), hsl(var(--elixir-glow)));
+    background: linear-gradient(
+      to right,
+      hsl(var(--elixir)),
+      hsl(var(--elixir-glow))
+    );
     box-shadow: var(--shadow-glow-elixir);
   }
 
@@ -213,12 +241,12 @@
   .card-cost {
     @apply absolute top-1 left-1 w-7 h-7 rounded-full flex items-center justify-center font-bold text-sm;
     background: linear-gradient(135deg, hsl(var(--elixir)), hsl(280 90% 45%));
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   }
 
   .unit-sprite {
     @apply rounded-full transition-all duration-100;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   }
 
   .unit-friendly {
@@ -257,8 +285,13 @@
   }
 
   @keyframes pulse-zone {
-    0%, 100% { opacity: 0.5; }
-    50% { opacity: 1; }
+    0%,
+    100% {
+      opacity: 0.5;
+    }
+    50% {
+      opacity: 1;
+    }
   }
 
   .attack-effect {
@@ -268,42 +301,63 @@
   }
 
   @keyframes attack-flash {
-    0% { transform: scale(0); opacity: 1; }
-    100% { transform: scale(2); opacity: 0; }
+    0% {
+      transform: scale(0);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
   }
 
   .game-timer {
-    font-family: 'Bangers', cursive;
+    font-family: "Bangers", cursive;
     @apply text-4xl;
     text-shadow: 2px 2px 0 hsl(var(--background));
   }
 
   .winner-overlay {
     @apply fixed inset-0 flex items-center justify-center z-50;
-    background: rgba(0,0,0,0.8);
+    background: rgba(0, 0, 0, 0.8);
     animation: fade-in 0.3s ease-out;
   }
 
   .winner-banner {
-    font-family: 'Bangers', cursive;
+    font-family: "Bangers", cursive;
     @apply text-6xl text-center px-12 py-8 rounded-2xl;
     animation: scale-bounce 0.5s ease-out;
   }
 
   @keyframes scale-bounce {
-    0% { transform: scale(0); }
-    70% { transform: scale(1.1); }
-    100% { transform: scale(1); }
+    0% {
+      transform: scale(0);
+    }
+    70% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
 
   @keyframes fade-in {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes bounce-subtle {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-4px);
+    }
   }
 
   .animate-bounce-subtle {
@@ -312,18 +366,35 @@
 
   /* Evolution orbiting animation */
   @keyframes orbit {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   @keyframes counter-orbit {
-    from { transform: translateX(-50%) rotate(0deg); }
-    to { transform: translateX(-50%) rotate(-360deg); }
+    from {
+      transform: translateX(-50%) rotate(0deg);
+    }
+    to {
+      transform: translateX(-50%) rotate(-360deg);
+    }
   }
 
   /* Evolution glow pulse for hand cards */
   @keyframes evo-glow-pulse {
-    0%, 100% { box-shadow: 0 0 8px 2px rgba(168, 85, 247, 0.4), inset 0 0 4px rgba(168, 85, 247, 0.1); }
-    50% { box-shadow: 0 0 16px 5px rgba(168, 85, 247, 0.7), inset 0 0 8px rgba(168, 85, 247, 0.2); }
+    0%,
+    100% {
+      box-shadow:
+        0 0 8px 2px rgba(168, 85, 247, 0.4),
+        inset 0 0 4px rgba(168, 85, 247, 0.1);
+    }
+    50% {
+      box-shadow:
+        0 0 16px 5px rgba(168, 85, 247, 0.7),
+        inset 0 0 8px rgba(168, 85, 247, 0.2);
+    }
   }
 }

@@ -1,27 +1,30 @@
-import { useState, useEffect, useCallback } from 'react';
-import { User } from '@supabase/supabase-js';
-import { OnlinePlayer } from '@/hooks/useOnlinePresence';
-import { BattleRequest } from '@/hooks/useBattleRequests';
-import { ExtendedPlayerProgress } from '@/hooks/useProgression';
-import { ChestReward } from '@/types/game';
-import { MainMenu } from './MainMenu';
-import { CardsPage } from './CardsPage';
-import { CardBalanceInfo } from './DeckBuilder';
-import { ClanScreen } from './ClanScreen';
-import { ShopScreen } from './ShopScreen';
-import { TrophyRoad } from './TrophyRoad';
-import { EvolutionShardsModal } from './EvolutionShardsModal';
-import { useShop } from '@/hooks/useShop';
-import { cn } from '@/lib/utils';
+import { useState, useEffect, useCallback } from "react";
+import { User } from "@supabase/supabase-js";
+import { OnlinePlayer } from "@/hooks/useOnlinePresence";
+import { BattleRequest } from "@/hooks/useBattleRequests";
+import { ExtendedPlayerProgress } from "@/hooks/useProgression";
+import { ChestReward } from "@/types/game";
+import { MainMenu } from "./MainMenu";
+import { CardsPage } from "./CardsPage";
+import { CardBalanceInfo } from "./DeckBuilder";
+import { ClanScreen } from "./ClanScreen";
+import { ShopScreen } from "./ShopScreen";
+import { TrophyRoad } from "./TrophyRoad";
+import { EvolutionShardsModal } from "./EvolutionShardsModal";
+import { MegaDraftScreen } from "./MegaDraftScreen";
+import { useShop } from "@/hooks/useShop";
+import { cn } from "@/lib/utils";
 
-type HomeScreen = 'shop' | 'cards' | 'battle' | 'clan' | 'evolutions';
+type HomeScreen = "shop" | "cards" | "battle" | "clan" | "evolutions";
 
-const SCREENS: HomeScreen[] = ['shop', 'cards', 'battle', 'clan'];
-const ALL_SCREENS_WITH_EVOLUTIONS = [...SCREENS, 'evolutions'] as const;
+const SCREENS: HomeScreen[] = ["shop", "cards", "battle", "clan"];
+const ALL_SCREENS_WITH_EVOLUTIONS = [...SCREENS, "evolutions"] as const;
 
 interface HomeNavigatorProps {
   progress: ExtendedPlayerProgress;
   onBattle: () => void;
+  onBattleWithDeck?: (deck: string[]) => void;
+  onBattleBossMode?: () => void;
   onOpenChest: () => void;
   onReset: () => void;
   onOpenProfile: () => void;
@@ -33,7 +36,10 @@ interface HomeNavigatorProps {
   onAddCard: (cardId: string) => void;
   onSelectTowerTroop?: (troopId: string) => void;
   onClaimTrophyReward?: (trophyMilestone: number) => boolean;
-  onGenerateReward?: (stars: number, skipInventoryCheck?: boolean) => ChestReward | null;
+  onGenerateReward?: (
+    stars: number,
+    skipInventoryCheck?: boolean,
+  ) => ChestReward | null;
   onUseWildCards?: (cardId: string, amount: number) => boolean;
   onUnlockEvolution?: (cardId: string) => boolean;
   // Multiplayer props
@@ -52,6 +58,8 @@ interface HomeNavigatorProps {
 export function HomeNavigator({
   progress,
   onBattle,
+  onBattleWithDeck,
+  onBattleBossMode,
   onOpenChest,
   onReset,
   onOpenProfile,
@@ -82,29 +90,39 @@ export function HomeNavigator({
   const [isAnimating, setIsAnimating] = useState(false);
   const [showTrophyRoad, setShowTrophyRoad] = useState(false);
   const [showEvolutions, setShowEvolutions] = useState(false);
-  
-  const { shopState, purchaseItem, getTimeUntilRefresh } = useShop(progress.ownedCardIds);
-  
+  const [gameMode, setGameMode] = useState<string>("Normal");
+  const [showMegaDraft, setShowMegaDraft] = useState(false);
+
+  const { shopState, purchaseItem, getTimeUntilRefresh } = useShop(
+    progress.ownedCardIds,
+  );
+
   const trophies = progress.wins * 30;
 
-  const navigateTo = useCallback((index: number) => {
-    if (isAnimating || index < 0 || index >= SCREENS.length) return;
-    setIsAnimating(true);
-    setCurrentIndex(index);
-    setTimeout(() => setIsAnimating(false), 300);
-  }, [isAnimating]);
+  const navigateTo = useCallback(
+    (index: number) => {
+      if (isAnimating || index < 0 || index >= SCREENS.length) return;
+      setIsAnimating(true);
+      setCurrentIndex(index);
+      setTimeout(() => setIsAnimating(false), 300);
+    },
+    [isAnimating],
+  );
 
-  const handleKeyDown = useCallback((e: KeyboardEvent) => {
-    if (e.key === 'ArrowLeft') {
-      navigateTo(currentIndex - 1);
-    } else if (e.key === 'ArrowRight') {
-      navigateTo(currentIndex + 1);
-    }
-  }, [currentIndex, navigateTo]);
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        navigateTo(currentIndex - 1);
+      } else if (e.key === "ArrowRight") {
+        navigateTo(currentIndex + 1);
+      }
+    },
+    [currentIndex, navigateTo],
+  );
 
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown]);
 
   const goToScreen = (screen: HomeScreen) => {
@@ -114,7 +132,34 @@ export function HomeNavigator({
     }
   };
 
-  const handleShopPurchase = (itemId: string, price: number, cardId: string) => {
+  const handleBattle = () => {
+    if (gameMode === "Mega Draft") {
+      setShowMegaDraft(true);
+    } else if (gameMode === "Boss Battle") {
+      if (onBattleBossMode) {
+        onBattleBossMode();
+      } else {
+        onBattle();
+      }
+    } else {
+      onBattle();
+    }
+  };
+
+  const handleMegaDraftComplete = (draftedDeck: string[]) => {
+    setShowMegaDraft(false);
+    if (onBattleWithDeck) {
+      onBattleWithDeck(draftedDeck);
+    } else {
+      onBattle();
+    }
+  };
+
+  const handleShopPurchase = (
+    itemId: string,
+    price: number,
+    cardId: string,
+  ) => {
     if (onSpendGold(price)) {
       purchaseItem(itemId);
       onAddCard(cardId);
@@ -127,32 +172,36 @@ export function HomeNavigator({
   };
 
   return (
-    <div className="h-screen w-screen overflow-hidden relative">
+    <div className="h-screen w-screen overflow-x-hidden overflow-y-auto relative">
       {/* Sliding container */}
-      <div 
-        className={cn(
-          "flex h-full transition-transform duration-300 ease-out",
-        )}
-        style={{ 
+      <div
+        className={cn("flex h-full transition-transform duration-300 ease-out")}
+        style={{
           width: `${SCREENS.length * 100}%`,
-          transform: `translateX(-${currentIndex * (100 / SCREENS.length)}%)`
+          transform: `translateX(-${currentIndex * (100 / SCREENS.length)}%)`,
         }}
       >
         {/* Shop Screen */}
-        <div className="w-full h-full flex-shrink-0" style={{ width: `${100 / SCREENS.length}%` }}>
+        <div
+          className="w-full h-full flex-shrink-0"
+          style={{ width: `${100 / SCREENS.length}%` }}
+        >
           <ShopScreen
             shopState={shopState}
             gold={progress.gold}
             ownedCardIds={progress.ownedCardIds}
             onPurchase={handleShopPurchase}
             onClaimFreebie={handleClaimFreebie}
-            onBack={() => goToScreen('cards')}
+            onBack={() => goToScreen("cards")}
             timeUntilRefresh={getTimeUntilRefresh()}
           />
         </div>
 
         {/* Cards Screen */}
-        <div className="w-full h-full flex-shrink-0" style={{ width: `${100 / SCREENS.length}%` }}>
+        <div
+          className="w-full h-full flex-shrink-0"
+          style={{ width: `${100 / SCREENS.length}%` }}
+        >
           <CardsPage
             progress={progress}
             onSaveDeck={onSaveDeck}
@@ -168,29 +217,37 @@ export function HomeNavigator({
         </div>
 
         {/* Battle/Main Menu Screen */}
-        <div className="w-full h-full flex-shrink-0" style={{ width: `${100 / SCREENS.length}%` }}>
+        <div
+          className="w-full h-full flex-shrink-0"
+          style={{ width: `${100 / SCREENS.length}%` }}
+        >
           <MainMenu
             progress={progress}
-            onBattle={onBattle}
-            onDeckBuilder={() => goToScreen('cards')}
-            onCollection={() => goToScreen('cards')}
-            onClan={() => goToScreen('clan')}
-            onShop={() => goToScreen('shop')}
+            onBattle={handleBattle}
+            onDeckBuilder={() => goToScreen("cards")}
+            onCollection={() => goToScreen("cards")}
+            onClan={() => goToScreen("clan")}
+            onShop={() => goToScreen("shop")}
             onOpenChest={onOpenChest}
             onReset={onReset}
             onOpenProfile={onOpenProfile}
             onOpenTrophyRoad={() => setShowTrophyRoad(true)}
             claimedTrophyRewards={progress.claimedTrophyRewards}
             incomingRequestCount={incomingRequests.length}
+            gameMode={gameMode}
+            onGameModeChange={setGameMode}
           />
         </div>
 
         {/* Clan Screen */}
-        <div className="w-full h-full flex-shrink-0" style={{ width: `${100 / SCREENS.length}%` }}>
+        <div
+          className="w-full h-full flex-shrink-0"
+          style={{ width: `${100 / SCREENS.length}%` }}
+        >
           <ClanScreen
             playerName={progress.playerName}
             trophies={trophies}
-            onBack={() => goToScreen('battle')}
+            onBack={() => goToScreen("battle")}
             user={user}
             onlinePlayers={onlinePlayers}
             incomingRequests={incomingRequests}
@@ -228,6 +285,16 @@ export function HomeNavigator({
             cardCopies={progress.cardCopies}
             onUnlockEvolution={onUnlockEvolution}
             onClose={() => setShowEvolutions(false)}
+          />
+        </div>
+      )}
+
+      {/* Mega Draft Screen Overlay */}
+      {showMegaDraft && (
+        <div className="absolute inset-0 z-50">
+          <MegaDraftScreen
+            onDraftComplete={handleMegaDraftComplete}
+            onCancel={() => setShowMegaDraft(false)}
           />
         </div>
       )}

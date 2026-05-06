@@ -1,11 +1,24 @@
-import { GameState, Position, PlacementZone, Building as BuildingType, ActiveSpell, Tower as TowerType } from '@/types/game';
-import { Projectile, SpawnEffect, DamageNumber, CrownAnimation } from '@/hooks/useGameState';
-import { Tower } from './Tower';
-import { Unit } from './Unit';
-import { ProjectileComponent, SpawnEffectComponent } from './Projectile';
-import { cn } from '@/lib/utils';
-import { getCardById } from '@/data/cards';
-import { Arena as ArenaType } from '@/data/arenas';
+import {
+  GameState,
+  Position,
+  PlacementZone,
+  Building as BuildingType,
+  ActiveSpell,
+  Tower as TowerType,
+  CardDefinition,
+} from "@/types/game";
+import {
+  Projectile,
+  SpawnEffect,
+  DamageNumber,
+  CrownAnimation,
+} from "@/hooks/useGameState";
+import { Tower } from "./Tower";
+import { Unit } from "./Unit";
+import { ProjectileComponent, SpawnEffectComponent } from "./Projectile";
+import { cn } from "@/lib/utils";
+import { getCardById } from "@/data/cards";
+import { Arena as ArenaType } from "@/data/arenas";
 interface ArenaProps {
   gameState: GameState;
   projectiles: Projectile[];
@@ -16,24 +29,28 @@ interface ArenaProps {
   arenaHeight: number;
   onArenaClick: (position: Position) => void;
   arenaTheme?: ArenaType; // Current arena theme
+  selectedCard?: CardDefinition | null;
+  hoverPos?: { x: number; y: number } | null;
+  onArenaMouseMove?: (pos: { x: number; y: number }) => void;
+  onArenaMouseLeave?: () => void;
 }
 
 function DamageNumberComponent({ dmg }: { dmg: DamageNumber }) {
   const opacity = 1 - dmg.progress;
   const translateY = -30 * dmg.progress;
-  
+
   return (
     <div
       className={cn(
         "absolute pointer-events-none font-bold text-sm z-50",
-        dmg.isCritical ? "text-amber-400 text-base" : "text-red-400"
+        dmg.isCritical ? "text-amber-400 text-base" : "text-red-400",
       )}
       style={{
         left: dmg.position.x,
         top: dmg.position.y,
         transform: `translate(-50%, ${translateY}px) scale(${1 + dmg.progress * 0.3})`,
         opacity,
-        textShadow: '0 2px 4px rgba(0,0,0,0.8)'
+        textShadow: "0 2px 4px rgba(0,0,0,0.8)",
       }}
     >
       -{dmg.damage}
@@ -41,23 +58,34 @@ function DamageNumberComponent({ dmg }: { dmg: DamageNumber }) {
   );
 }
 
-function BuildingComponent({ building, targetPosition }: { building: BuildingType; targetPosition?: Position }) {
+function BuildingComponent({
+  building,
+  targetPosition,
+}: {
+  building: BuildingType;
+  targetPosition?: Position;
+}) {
   const card = getCardById(building.cardId);
   const healthPercent = (building.health / building.maxHealth) * 100;
   const lifetimePercent = (building.lifetime / building.maxLifetime) * 100;
-  const healthClass = healthPercent > 60 ? 'bg-green-500' : healthPercent > 30 ? 'bg-yellow-500' : 'bg-red-500';
-  
+  const healthClass =
+    healthPercent > 60
+      ? "bg-green-500"
+      : healthPercent > 30
+        ? "bg-yellow-500"
+        : "bg-red-500";
+
   // Check if this is a siege building (targets buildings/towers)
-  const isSiegeBuilding = building.targetType === 'buildings';
+  const isSiegeBuilding = building.targetType === "buildings";
   const hasTarget = isSiegeBuilding && targetPosition;
-  
+
   return (
     <>
       {/* Target line for siege buildings */}
       {hasTarget && (
-        <svg 
+        <svg
           className="absolute inset-0 pointer-events-none z-10"
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: "100%", height: "100%" }}
         >
           {/* Outer glow line */}
           <line
@@ -65,7 +93,7 @@ function BuildingComponent({ building, targetPosition }: { building: BuildingTyp
             y1={building.position.y}
             x2={targetPosition.x}
             y2={targetPosition.y}
-            stroke={building.owner === 'player' ? '#60a5fa' : '#f87171'}
+            stroke={building.owner === "player" ? "#60a5fa" : "#f87171"}
             strokeWidth="4"
             opacity="0.3"
             strokeLinecap="round"
@@ -76,7 +104,7 @@ function BuildingComponent({ building, targetPosition }: { building: BuildingTyp
             y1={building.position.y}
             x2={targetPosition.x}
             y2={targetPosition.y}
-            stroke={building.owner === 'player' ? '#3b82f6' : '#ef4444'}
+            stroke={building.owner === "player" ? "#3b82f6" : "#ef4444"}
             strokeWidth="2"
             strokeDasharray="8 4"
             strokeLinecap="round"
@@ -96,91 +124,94 @@ function BuildingComponent({ building, targetPosition }: { building: BuildingTyp
             cy={targetPosition.y}
             r="12"
             fill="none"
-            stroke={building.owner === 'player' ? '#3b82f6' : '#ef4444'}
+            stroke={building.owner === "player" ? "#3b82f6" : "#ef4444"}
             strokeWidth="2"
             opacity="0.6"
             className="animate-ping"
-            style={{ animationDuration: '1.5s' }}
+            style={{ animationDuration: "1.5s" }}
           />
           <circle
             cx={targetPosition.x}
             cy={targetPosition.y}
             r="6"
-            fill={building.owner === 'player' ? '#3b82f680' : '#ef444480'}
-            stroke={building.owner === 'player' ? '#60a5fa' : '#f87171'}
+            fill={building.owner === "player" ? "#3b82f680" : "#ef444480"}
+            stroke={building.owner === "player" ? "#60a5fa" : "#f87171"}
             strokeWidth="1.5"
           />
         </svg>
       )}
-      
+
       <div
         className="absolute pointer-events-none"
         style={{
           left: building.position.x,
           top: building.position.y,
-          transform: 'translate(-50%, -50%)',
-          zIndex: 20
+          transform: "translate(-50%, -50%)",
+          zIndex: 20,
         }}
       >
         {/* Siege targeting indicator */}
         {isSiegeBuilding && (
-          <div 
+          <div
             className={cn(
               "absolute -top-6 left-1/2 -translate-x-1/2 text-[8px] font-bold px-1.5 py-0.5 rounded",
-              building.owner === 'player' 
-                ? "bg-blue-600/80 text-blue-100" 
-                : "bg-red-600/80 text-red-100"
+              building.owner === "player"
+                ? "bg-blue-600/80 text-blue-100"
+                : "bg-red-600/80 text-red-100",
             )}
           >
-            {hasTarget ? '🎯 LOCKED' : '🔍 SEEKING'}
+            {hasTarget ? "🎯 LOCKED" : "🔍 SEEKING"}
           </div>
         )}
-        
+
         {/* Building body */}
-        <div 
+        <div
           className={cn(
             "w-10 h-10 rounded-lg flex items-center justify-center text-lg border-2 shadow-lg relative",
-            building.owner === 'player' 
-              ? "bg-gradient-to-b from-blue-600 to-blue-800 border-blue-400" 
+            building.owner === "player"
+              ? "bg-gradient-to-b from-blue-600 to-blue-800 border-blue-400"
               : "bg-gradient-to-b from-red-600 to-red-800 border-red-400",
             hasTarget && "ring-2 ring-offset-1",
-            hasTarget && (building.owner === 'player' ? "ring-blue-400/50" : "ring-red-400/50")
+            hasTarget &&
+              (building.owner === "player"
+                ? "ring-blue-400/50"
+                : "ring-red-400/50"),
           )}
         >
-          {card?.emoji || '🏰'}
-          
+          {card?.emoji || "🏰"}
+
           {/* Firing indicator when attacking */}
           {hasTarget && (
             <div className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full animate-ping" />
           )}
         </div>
-        
+
         {/* Health bar */}
         <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-12 h-1.5 bg-gray-800 rounded-full overflow-hidden border border-gray-600">
-          <div 
+          <div
             className={cn("h-full transition-all", healthClass)}
             style={{ width: `${healthPercent}%` }}
           />
         </div>
-        
+
         {/* Numeric health display */}
         <div className="absolute -bottom-6 left-1/2 -translate-x-1/2">
-          <span 
+          <span
             className={cn(
               "text-[9px] font-bold px-1 rounded",
-              building.owner === 'player' ? "text-blue-200" : "text-red-200"
+              building.owner === "player" ? "text-blue-200" : "text-red-200",
             )}
-            style={{ textShadow: '0 1px 2px rgba(0,0,0,0.8)' }}
+            style={{ textShadow: "0 1px 2px rgba(0,0,0,0.8)" }}
           >
             {Math.max(0, Math.floor(building.health))}
           </span>
         </div>
-        
+
         {/* Lifetime indicator (circular) */}
-        <div 
+        <div
           className="absolute -top-1 -right-1 w-3 h-3 rounded-full border border-white/50"
           style={{
-            background: `conic-gradient(${building.owner === 'player' ? '#60a5fa' : '#f87171'} ${lifetimePercent}%, transparent ${lifetimePercent}%)`
+            background: `conic-gradient(${building.owner === "player" ? "#60a5fa" : "#f87171"} ${lifetimePercent}%, transparent ${lifetimePercent}%)`,
           }}
         />
       </div>
@@ -190,56 +221,68 @@ function BuildingComponent({ building, targetPosition }: { building: BuildingTyp
 
 function SpellEffectComponent({ spell }: { spell: ActiveSpell }) {
   const card = getCardById(spell.cardId);
-  const isFreeze = card?.id === 'freeze';
-  const isPoison = card?.id === 'poison';
-  const isRage = card?.id === 'rage';
-  
+  const isFreeze = card?.id === "freeze";
+  const isPoison = card?.id === "poison";
+  const isRage = card?.id === "rage";
+
   // Instant spells fade out quickly
-  const opacity = spell.remainingDuration > 0 
-    ? Math.min(1, spell.remainingDuration / 2) 
-    : 1 - (spell.hasAppliedInstant ? 0.8 : 0);
-  
+  const opacity =
+    spell.remainingDuration > 0
+      ? Math.min(1, spell.remainingDuration / 2)
+      : 1 - (spell.hasAppliedInstant ? 0.8 : 0);
+
   return (
     <div
       className="absolute pointer-events-none"
       style={{
         left: spell.position.x,
         top: spell.position.y,
-        transform: 'translate(-50%, -50%)',
-        opacity
+        transform: "translate(-50%, -50%)",
+        opacity,
       }}
     >
       {/* Spell radius indicator */}
-      <div 
+      <div
         className={cn(
           "rounded-full border-2 animate-pulse",
-          isFreeze ? "bg-cyan-400/30 border-cyan-300" :
-          isPoison ? "bg-green-500/30 border-green-400" :
-          isRage ? "bg-red-500/30 border-red-400" :
-          spell.owner === 'player' ? "bg-blue-500/30 border-blue-400" : "bg-red-500/30 border-red-400"
+          isFreeze
+            ? "bg-cyan-400/30 border-cyan-300"
+            : isPoison
+              ? "bg-green-500/30 border-green-400"
+              : isRage
+                ? "bg-red-500/30 border-red-400"
+                : spell.owner === "player"
+                  ? "bg-blue-500/30 border-blue-400"
+                  : "bg-red-500/30 border-red-400",
         )}
         style={{
           width: spell.radius * 2,
           height: spell.radius * 2,
         }}
       />
-      
+
       {/* Spell emoji in center */}
       <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl">
-        {card?.emoji || '✨'}
+        {card?.emoji || "✨"}
       </div>
     </div>
   );
 }
 
-function PlacementZoneOverlay({ zone, isBonus }: { zone: PlacementZone; isBonus: boolean }) {
+function PlacementZoneOverlay({
+  zone,
+  isBonus,
+}: {
+  zone: PlacementZone;
+  isBonus: boolean;
+}) {
   return (
     <div
       className={cn(
         "absolute pointer-events-none transition-all duration-300",
-        isBonus 
-          ? "bg-emerald-500/20 border-2 border-emerald-400/50 border-dashed" 
-          : "bg-blue-500/15"
+        isBonus
+          ? "bg-emerald-500/20 border-2 border-emerald-400/50 border-dashed"
+          : "bg-blue-500/15",
       )}
       style={{
         left: zone.minX,
@@ -260,29 +303,39 @@ function PlacementZoneOverlay({ zone, isBonus }: { zone: PlacementZone; isBonus:
 }
 
 // Crown animation that flies from destroyed tower to score display
-function CrownAnimationComponent({ crown, arenaHeight }: { crown: CrownAnimation; arenaHeight: number }) {
+function CrownAnimationComponent({
+  crown,
+  arenaHeight,
+}: {
+  crown: CrownAnimation;
+  arenaHeight: number;
+}) {
   // Calculate animation path - crown flies up and curves to the side
   const startX = crown.fromPosition.x;
   const startY = crown.fromPosition.y;
-  
+
   // End position: top of arena, left side for player score, right for enemy
-  const endX = crown.toSide === 'player' ? 60 : 260;
+  const endX = crown.toSide === "player" ? 60 : 260;
   const endY = -40; // Above the arena (into the HUD)
-  
+
   // Bezier curve control point for arc motion
   const controlY = startY - 100;
-  
+
   // Quadratic bezier interpolation
   const t = crown.progress;
   const oneMinusT = 1 - t;
-  
-  const x = oneMinusT * oneMinusT * startX + 2 * oneMinusT * t * startX + t * t * endX;
-  const y = oneMinusT * oneMinusT * startY + 2 * oneMinusT * t * controlY + t * t * endY;
-  
+
+  const x =
+    oneMinusT * oneMinusT * startX + 2 * oneMinusT * t * startX + t * t * endX;
+  const y =
+    oneMinusT * oneMinusT * startY +
+    2 * oneMinusT * t * controlY +
+    t * t * endY;
+
   // Scale and opacity animation
   const scale = 1 + Math.sin(t * Math.PI) * 0.5; // Bulge in the middle
   const opacity = t < 0.8 ? 1 : 1 - (t - 0.8) / 0.2; // Fade out at the end
-  
+
   return (
     <div
       className="absolute pointer-events-none z-[100]"
@@ -296,9 +349,9 @@ function CrownAnimationComponent({ crown, arenaHeight }: { crown: CrownAnimation
       <div className="relative">
         <span className="text-3xl drop-shadow-lg animate-pulse">👑</span>
         {/* Sparkle trail */}
-        <div 
+        <div
           className="absolute inset-0 animate-ping"
-          style={{ animationDuration: '0.3s' }}
+          style={{ animationDuration: "0.3s" }}
         >
           <span className="text-3xl opacity-50">✨</span>
         </div>
@@ -307,17 +360,31 @@ function CrownAnimationComponent({ crown, arenaHeight }: { crown: CrownAnimation
   );
 }
 
-export function Arena({ 
-  gameState, 
-  projectiles, 
+export function Arena({
+  gameState,
+  projectiles,
   spawnEffects,
   damageNumbers,
   crownAnimations,
-  arenaWidth, 
-  arenaHeight, 
+  arenaWidth,
+  arenaHeight,
   onArenaClick,
-  arenaTheme
+  arenaTheme,
+  selectedCard,
+  hoverPos,
+  onArenaMouseMove,
+  onArenaMouseLeave,
 }: ArenaProps) {
+  const TILE_SIZE = 20;
+
+  const rarityGhostBg: Record<string, string> = {
+    common: "linear-gradient(to bottom, #64748b, #475569)",
+    rare: "linear-gradient(to bottom, #3b82f6, #1d4ed8)",
+    epic: "linear-gradient(to bottom, #a855f7, #7e22ce)",
+    legendary: "linear-gradient(to bottom, #f59e0b, #d97706)",
+    champion: "linear-gradient(to bottom, #ec4899, #be185d)",
+  };
+
   const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -326,27 +393,33 @@ export function Arena({
   };
 
   // Parse arena color for theming
-  const arenaColor = arenaTheme?.color || '#1e3a5f';
+  const arenaColor = arenaTheme?.color || "#1e3a5f";
 
   return (
     <div
       className={cn(
         "arena-field relative rounded-xl overflow-hidden border-4 shadow-xl transition-all duration-500",
-        gameState.isSuddenDeath 
-          ? "border-orange-500/80 shadow-orange-500/30" 
-          : "border-muted"
+        gameState.isSuddenDeath
+          ? "border-orange-500/80 shadow-orange-500/30"
+          : "border-muted",
       )}
-      style={{ 
-        width: arenaWidth, 
+      style={{
+        width: arenaWidth,
         height: arenaHeight,
-        background: `linear-gradient(to bottom, ${arenaColor}dd, ${arenaColor}99, ${arenaColor}dd)`
+        background: `linear-gradient(to bottom, ${arenaColor}dd, ${arenaColor}99, ${arenaColor}dd)`,
       }}
       onClick={handleClick}
+      onMouseMove={(e) => {
+        if (!onArenaMouseMove) return;
+        const rect = e.currentTarget.getBoundingClientRect();
+        onArenaMouseMove({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+      }}
+      onMouseLeave={() => onArenaMouseLeave?.()}
     >
       {/* Arena name badge */}
       {arenaTheme && (
         <div className="absolute top-1 left-1/2 -translate-x-1/2 z-40 pointer-events-none">
-          <div 
+          <div
             className="px-2 py-0.5 rounded-full text-[8px] font-bold text-white/80 flex items-center gap-1"
             style={{ backgroundColor: `${arenaColor}cc` }}
           >
@@ -355,204 +428,279 @@ export function Arena({
           </div>
         </div>
       )}
-      
+
       {/* Grid pattern for depth */}
-      <div 
-        className="absolute inset-0 opacity-10"
+      <div
+        className="absolute inset-0 pointer-events-none"
         style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-          backgroundSize: '40px 40px'
+          backgroundImage:
+            "linear-gradient(rgba(255,255,255,0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.18) 1px, transparent 1px)",
+          backgroundSize: "20px 20px",
         }}
       />
-      
+
       {/* Sudden death overlay effect */}
       {gameState.isSuddenDeath && (
-        <div 
+        <div
           className="absolute inset-0 pointer-events-none animate-pulse"
           style={{
-            background: 'radial-gradient(circle at center, transparent 40%, rgba(249,115,22,0.15) 100%)',
+            background:
+              "radial-gradient(circle at center, transparent 40%, rgba(249,115,22,0.15) 100%)",
           }}
         />
       )}
-      
+
       {/* Enemy side shading */}
-      <div 
+      <div
         className="absolute inset-x-0 top-0"
-        style={{ 
+        style={{
           height: arenaHeight / 2,
           background: gameState.isSuddenDeath
-            ? 'linear-gradient(to bottom, rgba(249,115,22,0.15), transparent)'
-            : 'linear-gradient(to bottom, rgba(239,68,68,0.1), transparent)'
+            ? "linear-gradient(to bottom, rgba(249,115,22,0.15), transparent)"
+            : "linear-gradient(to bottom, rgba(239,68,68,0.1), transparent)",
         }}
       />
-      
+
       {/* Player side shading */}
-      <div 
+      <div
         className="absolute inset-x-0 bottom-0"
-        style={{ 
+        style={{
           height: arenaHeight / 2,
           background: gameState.isSuddenDeath
-            ? 'linear-gradient(to top, rgba(249,115,22,0.15), transparent)'
-            : 'linear-gradient(to top, rgba(59,130,246,0.1), transparent)'
+            ? "linear-gradient(to top, rgba(249,115,22,0.15), transparent)"
+            : "linear-gradient(to top, rgba(59,130,246,0.1), transparent)",
         }}
       />
-      
+
       {/* River line */}
-      <div 
+      <div
         className={cn(
           "absolute left-0 right-0 h-4 transition-colors duration-500",
         )}
-        style={{ 
+        style={{
           top: arenaHeight / 2 - 8,
           background: gameState.isSuddenDeath
-            ? 'linear-gradient(to bottom, transparent, #f9731680, #fb923c80, #f9731680, transparent)'
-            : 'linear-gradient(to bottom, transparent, #3b82f660, #60a5fa80, #3b82f660, transparent)'
+            ? "linear-gradient(to bottom, transparent, #f9731680, #fb923c80, #f9731680, transparent)"
+            : "linear-gradient(to bottom, transparent, #3b82f660, #60a5fa80, #3b82f660, transparent)",
         }}
       />
-      
+
       {/* Bridge left */}
-      <div 
+      <div
         className="absolute w-16 h-6 rounded-sm border border-amber-900/50"
-        style={{ 
-          left: 40, 
+        style={{
+          left: 40,
           top: arenaHeight / 2 - 12,
-          background: 'linear-gradient(to bottom, #a16207, #78350f)',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.4)'
+          background: "linear-gradient(to bottom, #a16207, #78350f)",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.4)",
         }}
       />
-      
+
       {/* Bridge right */}
-      <div 
+      <div
         className="absolute w-16 h-6 rounded-sm border border-amber-900/50"
-        style={{ 
-          right: 40, 
+        style={{
+          right: 40,
           top: arenaHeight / 2 - 12,
-          background: 'linear-gradient(to bottom, #a16207, #78350f)',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.4)'
+          background: "linear-gradient(to bottom, #a16207, #78350f)",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.4)",
         }}
       />
 
       {/* Placement zones when card selected */}
       {gameState.selectedCardIndex !== null && (
         <>
-          {gameState.playerPlacementZones.map(zone => (
-            <PlacementZoneOverlay 
-              key={zone.id} 
-              zone={zone} 
-              isBonus={zone.reason === 'tower-destroyed'}
+          {gameState.playerPlacementZones.map((zone) => (
+            <PlacementZoneOverlay
+              key={zone.id}
+              zone={zone}
+              isBonus={zone.reason === "tower-destroyed"}
             />
           ))}
         </>
       )}
 
       {/* Destroyed tower markers */}
-      {gameState.enemyTowers.filter(t => t.health <= 0).map(tower => (
-        <div
-          key={`destroyed-${tower.id}`}
-          className="absolute pointer-events-none"
-          style={{
-            left: tower.position.x,
-            top: tower.position.y,
-            transform: 'translate(-50%, -50%)'
-          }}
-        >
-          <div className="w-12 h-12 rounded-full bg-gray-800/50 border-2 border-gray-600/50 flex items-center justify-center">
-            <span className="text-2xl opacity-50">💥</span>
+      {gameState.enemyTowers
+        .filter((t) => t.health <= 0)
+        .map((tower) => (
+          <div
+            key={`destroyed-${tower.id}`}
+            className="absolute pointer-events-none"
+            style={{
+              left: tower.position.x,
+              top: tower.position.y,
+              transform: "translate(-50%, -50%)",
+            }}
+          >
+            <div className="w-12 h-12 rounded-full bg-gray-800/50 border-2 border-gray-600/50 flex items-center justify-center">
+              <span className="text-2xl opacity-50">💥</span>
+            </div>
           </div>
-        </div>
-      ))}
-      
-      {gameState.playerTowers.filter(t => t.health <= 0).map(tower => (
-        <div
-          key={`destroyed-${tower.id}`}
-          className="absolute pointer-events-none"
-          style={{
-            left: tower.position.x,
-            top: tower.position.y,
-            transform: 'translate(-50%, -50%)'
-          }}
-        >
-          <div className="w-12 h-12 rounded-full bg-gray-800/50 border-2 border-gray-600/50 flex items-center justify-center">
-            <span className="text-2xl opacity-50">💥</span>
+        ))}
+
+      {gameState.playerTowers
+        .filter((t) => t.health <= 0)
+        .map((tower) => (
+          <div
+            key={`destroyed-${tower.id}`}
+            className="absolute pointer-events-none"
+            style={{
+              left: tower.position.x,
+              top: tower.position.y,
+              transform: "translate(-50%, -50%)",
+            }}
+          >
+            <div className="w-12 h-12 rounded-full bg-gray-800/50 border-2 border-gray-600/50 flex items-center justify-center">
+              <span className="text-2xl opacity-50">💥</span>
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
 
       {/* Towers (only alive ones) */}
-      {gameState.playerTowers.filter(t => t.health > 0).map(tower => (
-        <Tower key={tower.id} tower={tower} />
-      ))}
-      {gameState.enemyTowers.filter(t => t.health > 0).map(tower => (
-        <Tower key={tower.id} tower={tower} />
-      ))}
+      {gameState.playerTowers
+        .filter((t) => t.health > 0)
+        .map((tower) => (
+          <Tower key={tower.id} tower={tower} />
+        ))}
+      {gameState.enemyTowers
+        .filter((t) => t.health > 0)
+        .map((tower) => (
+          <Tower key={tower.id} tower={tower} />
+        ))}
 
       {/* Spawn Effects */}
-      {spawnEffects.map(effect => (
+      {spawnEffects.map((effect) => (
         <SpawnEffectComponent key={effect.id} effect={effect} />
       ))}
 
       {/* Buildings */}
-      {gameState.playerBuildings.map(building => {
+      {gameState.playerBuildings.map((building) => {
         // Find target position for siege buildings
-        const targetTower = building.targetId 
-          ? gameState.enemyTowers.find(t => t.id === building.targetId && t.health > 0)
+        const targetTower = building.targetId
+          ? gameState.enemyTowers.find(
+              (t) => t.id === building.targetId && t.health > 0,
+            )
           : undefined;
-        const targetBuilding = !targetTower && building.targetId
-          ? gameState.enemyBuildings.find(b => b.id === building.targetId && b.health > 0)
-          : undefined;
-        const targetPosition = targetTower?.position || targetBuilding?.position;
-        
-        return <BuildingComponent key={building.id} building={building} targetPosition={targetPosition} />;
+        const targetBuilding =
+          !targetTower && building.targetId
+            ? gameState.enemyBuildings.find(
+                (b) => b.id === building.targetId && b.health > 0,
+              )
+            : undefined;
+        const targetPosition =
+          targetTower?.position || targetBuilding?.position;
+
+        return (
+          <BuildingComponent
+            key={building.id}
+            building={building}
+            targetPosition={targetPosition}
+          />
+        );
       })}
-      {gameState.enemyBuildings.map(building => {
-        const targetTower = building.targetId 
-          ? gameState.playerTowers.find(t => t.id === building.targetId && t.health > 0)
+      {gameState.enemyBuildings.map((building) => {
+        const targetTower = building.targetId
+          ? gameState.playerTowers.find(
+              (t) => t.id === building.targetId && t.health > 0,
+            )
           : undefined;
-        const targetBuilding = !targetTower && building.targetId
-          ? gameState.playerBuildings.find(b => b.id === building.targetId && b.health > 0)
-          : undefined;
-        const targetPosition = targetTower?.position || targetBuilding?.position;
-        
-        return <BuildingComponent key={building.id} building={building} targetPosition={targetPosition} />;
+        const targetBuilding =
+          !targetTower && building.targetId
+            ? gameState.playerBuildings.find(
+                (b) => b.id === building.targetId && b.health > 0,
+              )
+            : undefined;
+        const targetPosition =
+          targetTower?.position || targetBuilding?.position;
+
+        return (
+          <BuildingComponent
+            key={building.id}
+            building={building}
+            targetPosition={targetPosition}
+          />
+        );
       })}
 
       {/* Active Spells (visual effects) */}
-      {gameState.activeSpells.map(spell => (
+      {gameState.activeSpells.map((spell) => (
         <SpellEffectComponent key={spell.id} spell={spell} />
       ))}
 
       {/* Units */}
-      {gameState.playerUnits.map(unit => (
+      {gameState.playerUnits.map((unit) => (
         <Unit key={unit.id} unit={unit} />
       ))}
-      {gameState.enemyUnits.map(unit => (
+      {gameState.enemyUnits.map((unit) => (
         <Unit key={unit.id} unit={unit} />
       ))}
 
       {/* Projectiles */}
-      {projectiles.map(proj => (
+      {projectiles.map((proj) => (
         <ProjectileComponent key={proj.id} projectile={proj} />
       ))}
 
       {/* Damage Numbers */}
-      {damageNumbers.map(dmg => (
+      {damageNumbers.map((dmg) => (
         <DamageNumberComponent key={dmg.id} dmg={dmg} />
       ))}
 
       {/* Crown Animations */}
-      {crownAnimations.map(crown => (
-        <CrownAnimationComponent key={crown.id} crown={crown} arenaHeight={arenaHeight} />
+      {crownAnimations.map((crown) => (
+        <CrownAnimationComponent
+          key={crown.id}
+          crown={crown}
+          arenaHeight={arenaHeight}
+        />
       ))}
 
-      {/* Center decoration */}
-      <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-        <div className={cn(
-          "w-4 h-4 rounded-full border transition-colors duration-500",
-          gameState.isSuddenDeath 
-            ? "bg-orange-500/30 border-orange-400/50" 
-            : "bg-white/20 border-white/30"
-        )} />
-      </div>
+      {/* Tile highlight + ghost card when a card is selected and cursor is over arena */}
+      {selectedCard && hoverPos && (
+        <>
+          {/* Highlighted tile (snapped to grid) */}
+          <div
+            className="absolute pointer-events-none z-40"
+            style={{
+              left: Math.floor(hoverPos.x / TILE_SIZE) * TILE_SIZE,
+              top: Math.floor(hoverPos.y / TILE_SIZE) * TILE_SIZE,
+              width: TILE_SIZE,
+              height: TILE_SIZE,
+              background: "rgba(255, 255, 255, 0.22)",
+              border: "1.5px solid rgba(255, 255, 255, 0.75)",
+              boxShadow: "0 0 8px rgba(255,255,255,0.45)",
+              borderRadius: "2px",
+            }}
+          />
+
+          {/* Ghost card preview below cursor */}
+          <div
+            className="absolute pointer-events-none z-50"
+            style={{
+              left: hoverPos.x,
+              top: hoverPos.y + 14,
+              transform: "translateX(-50%)",
+              opacity: 0.82,
+            }}
+          >
+            <div
+              className="flex flex-col items-center justify-between p-0.5 border-2 border-white/40 rounded-lg w-10 h-12 shadow-lg"
+              style={{
+                background:
+                  rarityGhostBg[selectedCard.rarity] ?? rarityGhostBg.common,
+              }}
+            >
+              <span className="text-[9px] font-bold text-white leading-tight bg-black/40 rounded-sm px-0.5">
+                {selectedCard.elixirCost}💧
+              </span>
+              <span className="text-xl leading-none">{selectedCard.emoji}</span>
+              <span className="text-[6px] font-bold text-white/90 truncate w-full text-center leading-tight">
+                {selectedCard.name.split(" ")[0]}
+              </span>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
