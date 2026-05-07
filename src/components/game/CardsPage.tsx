@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PlayerProgress, DeckSlot } from '@/types/game';
 import { Button } from '@/components/ui/button';
 import { Swords, Library } from 'lucide-react';
@@ -20,6 +20,8 @@ interface CardsPageProps {
   onUseWildCards?: (cardId: string, amount: number) => boolean;
   onUnlockEvolution?: (cardId: string) => boolean;
   onOpenEvolutions?: () => void;
+  forcedTab?: TabType;
+  tutorialHighlightCollection?: boolean;
 }
 
 type TabType = 'decks' | 'collection';
@@ -35,9 +37,15 @@ export function CardsPage({
   onSelectTowerTroop,
   onUseWildCards,
   onUnlockEvolution,
-  onOpenEvolutions
+  onOpenEvolutions,
+  forcedTab,
+  tutorialHighlightCollection,
 }: CardsPageProps) {
   const [activeTab, setActiveTab] = useState<TabType>('decks');
+
+  useEffect(() => {
+    if (forcedTab) setActiveTab(forcedTab);
+  }, [forcedTab]);
 
   return (
     <div className="h-screen flex flex-col bg-background">
@@ -60,7 +68,8 @@ export function CardsPage({
           size="sm"
           className={cn(
             'flex-1 gap-2',
-            activeTab === 'collection' && 'bg-primary text-primary-foreground'
+            activeTab === 'collection' && 'bg-primary text-primary-foreground',
+            tutorialHighlightCollection && 'ring-2 ring-yellow-400 ring-offset-1'
           )}
           onClick={() => setActiveTab('collection')}
         >

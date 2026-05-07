@@ -10,6 +10,7 @@ import {
   Coins,
   Gift,
   ChevronDown,
+  Play,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getBannerById } from "@/data/banners";
@@ -23,7 +24,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const GAME_MODES = ["Normal", "Platform", "Mega Draft", "Boss Battle"] as const;
+const GAME_MODES = ["Normal", "Platform", "👑 Flappy Royale", "Mega Draft", "Boss Battle"] as const;
 type GameMode = (typeof GAME_MODES)[number];
 
 interface MainMenuProps {
@@ -41,6 +42,7 @@ interface MainMenuProps {
   incomingRequestCount?: number;
   gameMode?: string;
   onGameModeChange?: (mode: string) => void;
+  tutorialHighlight?: 'profile' | 'battle' | null;
 }
 
 export function MainMenu({
@@ -58,6 +60,7 @@ export function MainMenu({
   incomingRequestCount = 0,
   gameMode = "Normal",
   onGameModeChange,
+  tutorialHighlight,
 }: MainMenuProps) {
   const activeDeck = progress.deckSlots.find(
     (s) => s.id === progress.activeDeckId,
@@ -89,7 +92,10 @@ export function MainMenu({
         {/* Player Level & Info - Clickable for profile */}
         <button
           onClick={onOpenProfile}
-          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          className={cn(
+            "flex items-center gap-3 hover:opacity-80 transition-opacity rounded-lg p-1",
+            tutorialHighlight === 'profile' && "ring-4 ring-yellow-400 ring-offset-2 ring-offset-[#0d1b2a] animate-pulse"
+          )}
         >
           <div className="relative">
             <div
@@ -127,34 +133,100 @@ export function MainMenu({
 
       {/* Game Title */}
       <div className="text-center pt-3 flex flex-col items-center -space-y-1">
-        <h1
-          className="text-4xl font-black tracking-wider uppercase"
-          style={{
-            fontFamily: "'Luckiest Guy', cursive",
-            color: "#ffffff",
-            textShadow:
-              "2px 2px 0px #1a3a5c, 3px 3px 0px #0d2840, 4px 4px 8px rgba(0,0,0,0.5)",
-            filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.6))",
-            letterSpacing: "3px",
-          }}
-        >
-          Cracked
-        </h1>
-        <h1
-          className="text-5xl font-black tracking-wider uppercase"
-          style={{
-            fontFamily: "'Luckiest Guy', cursive",
-            background:
-              "linear-gradient(180deg, #fff9c4 0%, #ffd54f 25%, #ff8f00 50%, #e65100 75%, #8b4513 100%)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-            filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.6))",
-            letterSpacing: "2px",
-          }}
-        >
-          Royale
-        </h1>
+        {gameMode === "👑 Flappy Royale" ? (
+          <>
+            <h1
+              className="text-4xl font-black tracking-wider uppercase"
+              style={{
+                fontFamily: "'Luckiest Guy', cursive",
+                color: "#ffffff",
+                textShadow:
+                  "2px 2px 0px #1a3a5c, 3px 3px 0px #0d2840, 4px 4px 8px rgba(0,0,0,0.5)",
+                filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.6))",
+                letterSpacing: "3px",
+              }}
+            >
+              Flappy
+            </h1>
+            <h1
+              className="text-5xl font-black tracking-wider uppercase"
+              style={{
+                fontFamily: "'Luckiest Guy', cursive",
+                background:
+                  "linear-gradient(180deg, #fff9c4 0%, #ffd54f 25%, #ff8f00 50%, #e65100 75%, #8b4513 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.6))",
+                letterSpacing: "2px",
+              }}
+            >
+              Royale
+            </h1>
+          </>
+        ) : gameMode === "Platform" ? (
+          <>
+            <h1
+              className="text-4xl font-black tracking-wider uppercase"
+              style={{
+                fontFamily: "'Luckiest Guy', cursive",
+                color: "#ffffff",
+                textShadow:
+                  "2px 2px 0px #1a3a5c, 3px 3px 0px #0d2840, 4px 4px 8px rgba(0,0,0,0.5)",
+                filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.6))",
+                letterSpacing: "3px",
+              }}
+            >
+              Platform
+            </h1>
+            <h1
+              className="text-5xl font-black tracking-wider uppercase"
+              style={{
+                fontFamily: "'Luckiest Guy', cursive",
+                background:
+                  "linear-gradient(180deg, #fff9c4 0%, #ffd54f 25%, #ff8f00 50%, #e65100 75%, #8b4513 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.6))",
+                letterSpacing: "2px",
+              }}
+            >
+              Royale
+            </h1>
+          </>
+        ) : (
+          <>
+            <h1
+              className="text-4xl font-black tracking-wider uppercase"
+              style={{
+                fontFamily: "'Luckiest Guy', cursive",
+                color: "#ffffff",
+                textShadow:
+                  "2px 2px 0px #1a3a5c, 3px 3px 0px #0d2840, 4px 4px 8px rgba(0,0,0,0.5)",
+                filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.6))",
+                letterSpacing: "3px",
+              }}
+            >
+              Cracked
+            </h1>
+            <h1
+              className="text-5xl font-black tracking-wider uppercase"
+              style={{
+                fontFamily: "'Luckiest Guy', cursive",
+                background:
+                  "linear-gradient(180deg, #fff9c4 0%, #ffd54f 25%, #ff8f00 50%, #e65100 75%, #8b4513 100%)",
+                WebkitBackgroundClip: "text",
+                WebkitTextFillColor: "transparent",
+                backgroundClip: "text",
+                filter: "drop-shadow(2px 2px 4px rgba(0,0,0,0.6))",
+                letterSpacing: "2px",
+              }}
+            >
+              Royale
+            </h1>
+          </>
+        )}
       </div>
 
       {/* Arena Display Area - Clickable to open Trophy Road */}
@@ -328,6 +400,19 @@ export function MainMenu({
           </button>
         )}
 
+        <div className={cn(
+          "flex items-center gap-2 rounded-xl",
+          tutorialHighlight === 'battle' && "ring-4 ring-yellow-400 ring-offset-2 ring-offset-[#1a3a5c] p-1 animate-pulse"
+        )}>
+        {(gameMode === "Platform" || gameMode === "👑 Flappy Royale") ? (
+          <Button
+            onClick={onBattle}
+            className="px-12 h-12 text-xl font-bold gap-2 bg-gradient-to-b from-green-400 via-green-500 to-green-600 hover:from-green-300 hover:via-green-400 hover:to-green-500 border-b-4 border-green-800 text-white rounded-xl shadow-lg transform hover:scale-[1.02] transition-all"
+          >
+            <Play className="w-6 h-6" />
+            Play
+          </Button>
+        ) : (
         <Button
           onClick={onBattle}
           className="px-12 h-12 text-xl font-bold gap-2 bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 hover:from-yellow-200 hover:via-yellow-300 hover:to-yellow-400 border-b-4 border-yellow-700 text-yellow-900 rounded-xl shadow-lg transform hover:scale-[1.02] transition-all"
@@ -335,6 +420,7 @@ export function MainMenu({
           <Swords className="w-6 h-6" />
           Battle
         </Button>
+        )}
 
         {/* Game mode selector */}
         <DropdownMenu>
@@ -367,6 +453,7 @@ export function MainMenu({
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       </div>
 
       {/* Bottom Navigation */}

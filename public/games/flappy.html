@@ -1,0 +1,541 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Flappy Royale</title>
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        background: #12122a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100vh;
+        overflow: hidden;
+      }
+      #back-btn {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        z-index: 50;
+        padding: 7px 16px;
+        background: rgba(26, 26, 46, 0.85);
+        color: white;
+        border: 1px solid rgba(255,255,255,0.25);
+        border-radius: 8px;
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background 0.15s;
+      }
+      #back-btn:hover { background: rgba(68, 102, 255, 0.7); }
+      body { font-size: 0; overflow: hidden; }
+      #game-container canvas { display: block; }
+    </style>
+  </head>
+  <body>
+    <button id="back-btn" onclick="window.location.href='/'">&#x2190; Menu</button>
+    <div id="game-container"></div>
+
+    <!-- Phaser 3 from CDN — no node_modules needed -->
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <script>
+// ─── Constants ───────────────────────────────────────────────────────────────
+var GAME_W        = 400;
+var GAME_H        = 600;
+var GRAVITY       = 1400;   // px/s^2 — crown falls at this rate
+var FLAP_VEL      = -460;   // upward velocity on each tap
+var PIPE_SPEED    = 210;    // px/s — towers scroll left at this speed
+var PIPE_GAP      = 105;    // vertical opening between top and bottom tower
+var PIPE_W        = 62;     // tower width in pixels
+var GROUND_H      = 70;     // ground strip height at bottom of screen
+var PIPE_SPAWN_MS = 1750;   // ms between new tower pair spawns
+
+// Solid Clash Royale stone colour palette
+var COL_STONE_LT  = 0xb09870;  // light brick face
+var COL_STONE_MID = 0x8a7050;  // mid-tone body fill
+var COL_STONE_DK  = 0x5a4028;  // dark edge shading & battlements
+var COL_MORTAR    = 0x352010;  // mortar lines between bricks
+var COL_BORDER    = 0x1a0e04;  // outer outline
+
+// ─── Phaser config ───────────────────────────────────────────────────────────
+var config = {
+  type: Phaser.AUTO,
+  parent: "game-container",
+  width: GAME_W,
+  height: GAME_H,
+  physics: {
+    default: "arcade",
+    arcade: {
+      gravity: { y: GRAVITY }, // only affects the crown — towers are moved manually
+      debug: false
+    }
+  },
+  scene: { preload: preload, create: create, update: update }
+};
+
+// ─── Global state ────────────────────────────────────────────────────────────
+var gameState;       // "start" | "playing" | "dead"
+var score;
+var crownLabel;      // the player — a Text object with a physics body
+var groundBody;      // static physics body at the bottom
+var scoreText;
+var startOverlay;
+var deathOverlay;
+var hoverTween;
+var pipeTimer;
+var sceneRef;        // reference to the Phaser scene (used inside forEach callbacks)
+
+// towerPairs: array of manually-moved tower descriptors
+// Each entry: { gfxTop, gfxBot, x, gapTop, gapBot, scored }
+//   gfxTop / gfxBot — Graphics objects for visuals
+//   x               — current center-x of the tower column
+//   gapTop          — y where the gap opening starts (bottom of top tower)
+//   gapBot          — y where the gap opening ends   (top of bottom tower)
+//   scored          — true once this pair has already given the player a point
+var towerPairs = [];
+
+new Phaser.Game(config);
+
+// ─── Preload ─────────────────────────────────────────────────────────────────
+function preload() {
+  this.load.audio("flap",  "assets/audio/GameSFX/Bounce Jump/Retro Jump Simple A 01.wav");
+  this.load.audio("score", "assets/audio/GameSFX/PickUp/Retro PickUp Coin 07.wav");
+  this.load.audio("die",   "assets/audio/GameSFX/Impact/Retro Impact Punch Hurt 01.wav");
+}
+
+// ─── Create ──────────────────────────────────────────────────────────────────
+function create() {
+  sceneRef  = this;
+  gameState = "start";
+  score     = 0;
+  towerPairs = [];
+
+  drawBackground.call(this);
+
+  // Visual ground strip
+  this.add.rectangle(GAME_W / 2, GAME_H - GROUND_H / 2, GAME_W, GROUND_H, 0x3d2a0a).setDepth(5);
+  this.add.rectangle(GAME_W / 2, GAME_H - GROUND_H,     GAME_W, 4, 0x5c4020).setDepth(6);
+
+  // Static physics body for the ground — crown touching this triggers death
+  groundBody = this.physics.add.staticImage(GAME_W / 2, GAME_H - GROUND_H / 2, "__DEFAULT");
+  groundBody.setDisplaySize(GAME_W, GROUND_H);
+  groundBody.setAlpha(0);
+  groundBody.refreshBody();
+
+  // Crown — the Text game object IS the physics object
+  crownLabel = this.add.text(110, GAME_H / 2, "\uD83D\uDC51", { fontSize: "44px" })
+    .setOrigin(0.5).setDepth(10);
+  this.physics.add.existing(crownLabel);  // gives it an arcade physics body
+  // Size the body to exactly match the rendered emoji bounds
+  crownLabel.body.setSize(crownLabel.width, crownLabel.height);
+  crownLabel.body.allowGravity = false;   // gravity is off until the game starts
+
+  // Idle hover animation on start screen
+  hoverTween = this.tweens.add({
+    targets: crownLabel, y: "+=16", duration: 650,
+    yoyo: true, repeat: -1, ease: "Sine.easeInOut"
+  });
+
+  // Score counter — hidden until the round starts
+  scoreText = this.add.text(GAME_W / 2, 52, "\uD83C\uDFC6 0", {
+    fontSize: "36px", color: "#ffd700",
+    stroke: "#000000", strokeThickness: 5, fontStyle: "bold"
+  }).setOrigin(0.5).setDepth(20).setAlpha(0);
+
+  // Ground kills the crown (Phaser overlap — only used for the ground)
+  this.physics.add.overlap(crownLabel, groundBody, hitObstacle, null, this);
+
+  // Input — keyboard and tap/click
+  this.input.keyboard.on("keydown-SPACE", handleInput, this);
+  this.input.keyboard.on("keydown-UP",    handleInput, this);
+  this.input.on("pointerdown",            handleInput, this);
+
+  buildStartOverlay.call(this);
+  deathOverlay = this.add.container(0, 0).setDepth(40).setVisible(false);
+  pipeTimer = null;
+}
+
+// ─── Update — called every frame ─────────────────────────────────────────────
+// Receives (time, delta) from Phaser; delta is ms elapsed since the last frame.
+function update(time, delta) {
+  if (gameState === "dead") return;
+  if (gameState !== "playing") return;
+
+  // Tilt the crown: nose-up when rising, nose-down when falling
+  var tilt = Phaser.Math.Clamp(crownLabel.body.velocity.y / 8, -25, 75);
+  crownLabel.setAngle(tilt);
+
+  // Ceiling death
+  if (crownLabel.y < -20) { hitObstacle.call(this); return; }
+
+  var dt    = delta / 1000;            // convert ms → seconds
+  var moved = PIPE_SPEED * dt;         // px to move each tower leftward this frame
+
+  // Crown hitbox half-extents — read directly from the physics body so this
+  // stays in sync with whatever setSize resolved to above.
+  var cHalfW = crownLabel.body.halfWidth;
+  var cHalfH = crownLabel.body.halfHeight;
+  var cx     = crownLabel.x;
+  var cy     = crownLabel.y;
+
+  // Process every active tower pair
+  towerPairs = towerPairs.filter(function (pair) {
+    // ── Move left ────────────────────────────────────────────────────────
+    pair.x -= moved;
+
+    // Sync graphics to the new x position (graphics origin = top-left corner)
+    pair.gfxTop.x = pair.x - PIPE_W / 2;
+    pair.gfxBot.x = pair.x - PIPE_W / 2;
+
+    // ── Collision check (AABB) ────────────────────────────────────────────
+    // Is the crown horizontally overlapping this tower column?
+    if (cx + cHalfW > pair.x - PIPE_W / 2 && cx - cHalfW < pair.x + PIPE_W / 2) {
+      // Is the crown outside the gap vertically?
+      if (cy - cHalfH < pair.gapTop || cy + cHalfH > pair.gapBot) {
+        hitObstacle.call(sceneRef);
+      }
+    }
+
+    // ── Score — award a point when the gap centre passes the crown ────────
+    if (!pair.scored && pair.x + PIPE_W / 2 < cx) {
+      pair.scored = true;
+      score++;
+      scoreText.setText("\uD83C\uDFC6 " + score);
+      sceneRef.sound.play("score");
+    }
+
+    // ── Remove when fully off the left edge ───────────────────────────────
+    if (pair.x < -PIPE_W - 10) {
+      pair.gfxTop.destroy();
+      pair.gfxBot.destroy();
+      return false; // remove from array
+    }
+    return true;
+  });
+}
+
+// ─── Input handler ────────────────────────────────────────────────────────────
+function handleInput() {
+  if      (gameState === "start")   { startGame.call(this); }
+  else if (gameState === "playing") { flap.call(this); }
+  else if (gameState === "dead")    { restartGame.call(this); }
+}
+
+// ─── Start game ──────────────────────────────────────────────────────────────
+function startGame() {
+  gameState = "playing";
+  startOverlay.setVisible(false);
+  scoreText.setAlpha(1);
+  hoverTween.stop();
+  crownLabel.setAngle(0);
+  crownLabel.body.allowGravity = true; // enable gravity now
+
+  var self = this;
+  spawnPipePair.call(this);
+  pipeTimer = this.time.addEvent({
+    delay: PIPE_SPAWN_MS,
+    callback: function () { spawnPipePair.call(self); },
+    loop: true
+  });
+  flap.call(this); // give the crown an initial boost so it doesn't fall immediately
+}
+
+// ─── Flap ─────────────────────────────────────────────────────────────────────
+function flap() {
+  crownLabel.body.setVelocityY(FLAP_VEL);
+  this.sound.play("flap");
+}
+
+// ─── Hit obstacle ─────────────────────────────────────────────────────────────
+function hitObstacle() {
+  if (gameState === "dead") return; // guard against double-trigger
+  gameState = "dead";
+
+  this.sound.play("die");
+
+  if (pipeTimer) { pipeTimer.remove(); pipeTimer = null; }
+
+  // Freeze the crown in place
+  crownLabel.body.setVelocityX(0);
+  crownLabel.body.setVelocityY(0);
+  crownLabel.body.allowGravity = false;
+
+  // Red flash
+  var flash = this.add.rectangle(GAME_W / 2, GAME_H / 2, GAME_W, GAME_H, 0xff0000)
+    .setAlpha(0.4).setDepth(50);
+  this.tweens.add({
+    targets: flash, alpha: 0, duration: 350,
+    onComplete: function () { flash.destroy(); }
+  });
+
+  var best = getBest();
+  if (score > best) {
+    best = score;
+    localStorage.setItem("flappyRoyale_best", String(best));
+  }
+
+  var self = this;
+  this.time.delayedCall(650, function () { showDeathOverlay.call(self, score, best); });
+}
+
+// ─── Spawn a tower pair ───────────────────────────────────────────────────────
+function spawnPipePair() {
+  var playH  = GAME_H - GROUND_H;
+
+  // Random gap centre — between 22 % and 75 % of playable height
+  var gapCY  = Phaser.Math.Between(
+    Math.round(playH * 0.22),
+    Math.round(playH * 0.75)
+  );
+
+  var gapTop = gapCY - PIPE_GAP / 2;  // y where top tower ends
+  var gapBot = gapCY + PIPE_GAP / 2;  // y where bottom tower starts
+
+  // Clamp so neither tower vanishes entirely
+  if (gapTop < 24)         gapTop = 24;
+  if (gapBot > playH - 24) gapBot = playH - 24;
+
+  var startX = GAME_W + PIPE_W / 2;   // towers spawn just off the right edge
+
+  // Create the two Graphics visuals; their x will be updated each frame in update()
+  var gfxTop = drawTower(this, startX - PIPE_W / 2, 0,      PIPE_W, gapTop,        true);
+  var gfxBot = drawTower(this, startX - PIPE_W / 2, gapBot, PIPE_W, playH - gapBot, false);
+
+  towerPairs.push({
+    gfxTop: gfxTop, gfxBot: gfxBot,
+    x: startX, gapTop: gapTop, gapBot: gapBot,
+    scored: false
+  });
+}
+
+// ─── Draw a single stone tower Graphics object ────────────────────────────────
+// gx, gy = top-left world position; w, h = size; isTop = whether this is the
+// upper tower (affects where the battlements appear).
+function drawTower(scene, gx, gy, w, h, isTop) {
+  var g = scene.add.graphics();
+  g.x = gx;
+  g.y = gy;
+  g.setDepth(7);
+
+  // ── 1. Base fill — solid stone body ──────────────────────────────────────
+  g.fillStyle(COL_STONE_MID, 1);
+  g.fillRect(0, 0, w, h);
+
+  // ── 2. Darker side shading (left 8px and right 8px give 3-D depth) ───────
+  g.fillStyle(COL_STONE_DK, 1);
+  g.fillRect(0,     0, 8, h);
+  g.fillRect(w - 8, 0, 8, h);
+
+  // ── 3. Brick pattern — solid lighter rectangles with mortar gaps ──────────
+  // Brick area is the centre strip, between the two dark shading strips.
+  var brickAreaX = 8;
+  var brickAreaW = w - 16;
+  var brickH     = 14;
+  var brickW     = brickAreaW / 2;   // two bricks per row
+
+  for (var row = 0; row < Math.ceil(h / brickH) + 1; row++) {
+    var by  = row * brickH;
+    // Alternate offset per row so bricks interlock like real masonry
+    var off = (row % 2 === 0) ? 0 : brickW / 2;
+
+    for (var bx = -brickW + off; bx < brickAreaW + brickW; bx += brickW) {
+      var drawX = brickAreaX + bx;
+      var drawY = by;
+      var drawW = brickW;
+      var drawH = brickH;
+
+      // Clip to tower bounds
+      var clipL = Math.max(drawX, brickAreaX);
+      var clipR = Math.min(drawX + drawW, brickAreaX + brickAreaW);
+      var clipT = Math.max(drawY, 0);
+      var clipB = Math.min(drawY + drawH, h);
+
+      if (clipR > clipL && clipB > clipT) {
+        // Mortar gap: 1-2 px on each edge
+        g.fillStyle(COL_STONE_LT, 1);
+        g.fillRect(clipL + 2, clipT + 2, clipR - clipL - 3, clipB - clipT - 3);
+      }
+    }
+  }
+
+  // ── 4. Mortar grid lines (drawn ON TOP of bricks as dark 1px lines) ───────
+  g.lineStyle(1, COL_MORTAR, 0.8);
+  for (var r = 0; r < Math.ceil(h / brickH) + 1; r++) {
+    g.lineBetween(brickAreaX, r * brickH, brickAreaX + brickAreaW, r * brickH);
+  }
+  for (var r2 = 0; r2 < Math.ceil(h / brickH) + 1; r2++) {
+    var rowOff = (r2 % 2 === 0) ? 0 : brickW / 2;
+    for (var c = 0; c <= 3; c++) {
+      var vx = brickAreaX + c * brickW + rowOff;
+      g.lineBetween(vx, r2 * brickH, vx, (r2 + 1) * brickH);
+    }
+  }
+
+  // ── 5. Battlements (crenellations) at the gap-facing edge ────────────────
+  var crenH = 20;
+  var crenW = Math.floor(w / 4);
+  // Top tower: battlements hang down from the bottom edge (facing the gap)
+  // Bottom tower: battlements stick up from the top edge (facing the gap)
+  var crenY = isTop ? h - crenH : 0;
+
+  g.fillStyle(COL_STONE_DK, 1);
+  for (var i = 0; i < 4; i++) {
+    if (i % 2 === 0) { g.fillRect(i * crenW, crenY, crenW, crenH); }
+  }
+
+  // ── 6. Outer border ───────────────────────────────────────────────────────
+  g.lineStyle(3, COL_BORDER, 1);
+  g.strokeRect(0, 0, w, h);
+
+  return g;
+}
+
+// ─── Background ──────────────────────────────────────────────────────────────
+function drawBackground() {
+  var mid = GAME_H * 0.52;
+  this.add.rectangle(GAME_W / 2, 0,          GAME_W, mid * 0.55,   0x0d1540).setOrigin(0.5, 0);
+  this.add.rectangle(GAME_W / 2, mid * 0.55, GAME_W, mid * 0.45,   0x162056).setOrigin(0.5, 0);
+  this.add.rectangle(GAME_W / 2, mid,        GAME_W, GAME_H - mid, 0x1a3a08).setOrigin(0.5, 0);
+  this.add.rectangle(GAME_W / 2, mid - 2,    GAME_W, 8,            0x2244cc).setOrigin(0.5, 0).setAlpha(0.55);
+
+  drawSilhouette(this, 55,           mid, 38, 100);
+  drawSilhouette(this, GAME_W - 55,  mid, 38, 80);
+
+  for (var i = 0; i < 35; i++) {
+    var sx = Phaser.Math.Between(0, GAME_W);
+    var sy = Phaser.Math.Between(0, Math.round(mid * 0.85));
+    this.add.rectangle(sx, sy, 2, 2, 0xffffff).setAlpha(Phaser.Math.FloatBetween(0.15, 0.6));
+  }
+}
+
+function drawSilhouette(scene, cx, baseY, w, h) {
+  var col = 0x0a1030, alpha = 0.65;
+  scene.add.rectangle(cx, baseY - h / 2,        w,      h,  col).setAlpha(alpha);
+  scene.add.rectangle(cx, baseY - h - 10,        w + 10, 20, col).setAlpha(alpha);
+  scene.add.rectangle(cx - w / 4, baseY - h - 22, w * 0.28, 14, col).setAlpha(alpha);
+  scene.add.rectangle(cx + w / 4, baseY - h - 22, w * 0.28, 14, col).setAlpha(alpha);
+}
+
+// ─── Start-screen overlay ────────────────────────────────────────────────────
+function buildStartOverlay() {
+  var panelX = GAME_W / 2, panelY = GAME_H / 2 - 60;
+  var panelW = GAME_W - 50, panelH = 210;
+
+  var bg = this.add.graphics();
+  bg.fillStyle(0x000000, 0.45);
+  bg.fillRoundedRect(panelX - panelW / 2, panelY - panelH / 2, panelW, panelH, 14);
+  bg.lineStyle(2, 0xffd700, 0.7);
+  bg.strokeRoundedRect(panelX - panelW / 2, panelY - panelH / 2, panelW, panelH, 14);
+
+  var title = this.add.text(panelX, panelY - 74, "\uD83D\uDC51 FLAPPY ROYALE", {
+    fontSize: "26px", color: "#ffd700", stroke: "#000", strokeThickness: 5, fontStyle: "bold"
+  }).setOrigin(0.5);
+
+  var sub = this.add.text(panelX, panelY - 34, "Dodge the towers \u2014 earn trophies!", {
+    fontSize: "13px", color: "#dddddd", stroke: "#000", strokeThickness: 3
+  }).setOrigin(0.5);
+
+  var tapHint = this.add.text(panelX, panelY + 6, "TAP  /  SPACE  to flap", {
+    fontSize: "18px", color: "#ffffff", stroke: "#000", strokeThickness: 4, fontStyle: "bold"
+  }).setOrigin(0.5);
+  this.tweens.add({ targets: tapHint, alpha: 0.25, duration: 650, yoyo: true, repeat: -1, ease: "Sine.easeInOut" });
+
+  var bestLine = this.add.text(panelX, panelY + 46, "Best:  " + getBest() + "  \uD83C\uDFC6", {
+    fontSize: "15px", color: "rgba(255,215,0,0.7)", stroke: "#000", strokeThickness: 3
+  }).setOrigin(0.5);
+
+  startOverlay = this.add.container(0, 0, [bg, title, sub, tapHint, bestLine]).setDepth(30);
+}
+
+// ─── Death overlay ───────────────────────────────────────────────────────────
+function showDeathOverlay(finalScore, best) {
+  var scene = this;
+  deathOverlay.removeAll(true);
+  deathOverlay.setVisible(true);
+
+  var cx = GAME_W / 2, cy = GAME_H / 2, pw = GAME_W - 60, ph = 290;
+
+  var bg = scene.add.graphics();
+  bg.fillStyle(0x0d1540, 0.9);
+  bg.fillRoundedRect(cx - pw / 2, cy - ph / 2, pw, ph, 16);
+  bg.lineStyle(3, 0xffd700, 1);
+  bg.strokeRoundedRect(cx - pw / 2, cy - ph / 2, pw, ph, 16);
+
+  var lostTxt = scene.add.text(cx, cy - ph / 2 + 36, "BATTLE LOST!", {
+    fontSize: "27px", color: "#ff4444", stroke: "#000", strokeThickness: 5, fontStyle: "bold"
+  }).setOrigin(0.5);
+
+  var scoreTxt = scene.add.text(cx, cy - 30, "\uD83C\uDFC6  " + finalScore + "  Trophies", {
+    fontSize: "30px", color: "#ffd700", stroke: "#000", strokeThickness: 4, fontStyle: "bold"
+  }).setOrigin(0.5);
+
+  var bestTxt;
+  if (finalScore >= best && finalScore > 0) {
+    bestTxt = scene.add.text(cx, cy + 18, "\u2B50 NEW BEST!", {
+      fontSize: "19px", color: "#ffff55", stroke: "#000", strokeThickness: 3
+    }).setOrigin(0.5);
+  } else {
+    bestTxt = scene.add.text(cx, cy + 18, "Best:  " + best + "  \uD83C\uDFC6", {
+      fontSize: "17px", color: "rgba(255,215,0,0.65)", stroke: "#000", strokeThickness: 3
+    }).setOrigin(0.5);
+  }
+
+  var playBg = scene.add.rectangle(cx, cy + 80, 190, 46, 0xcc3333)
+    .setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffffff, 1);
+  var playTxt = scene.add.text(cx, cy + 80, "\u2694\uFE0F  Play Again", {
+    fontSize: "18px", color: "#ffffff", stroke: "#000", strokeThickness: 3, fontStyle: "bold"
+  }).setOrigin(0.5);
+  playBg.on("pointerover",  function () { playBg.setFillStyle(0xdd4444); });
+  playBg.on("pointerout",   function () { playBg.setFillStyle(0xcc3333); });
+  playBg.on("pointerdown",  function () { restartGame.call(scene); });
+
+  var menuBg = scene.add.rectangle(cx, cy + 136, 190, 42, 0x1e1e40)
+    .setInteractive({ useHandCursor: true }).setStrokeStyle(2, 0xffd700, 1);
+  var menuTxt = scene.add.text(cx, cy + 136, "\uD83C\uDFF0  Menu", {
+    fontSize: "16px", color: "#ffd700", stroke: "#000", strokeThickness: 3
+  }).setOrigin(0.5);
+  menuBg.on("pointerover",  function () { menuBg.setFillStyle(0x2a2a5a); });
+  menuBg.on("pointerout",   function () { menuBg.setFillStyle(0x1e1e40); });
+  menuBg.on("pointerdown",  function () { window.location.href = "/"; });
+
+  deathOverlay.add([bg, lostTxt, scoreTxt, bestTxt, playBg, playTxt, menuBg, menuTxt]);
+}
+
+// ─── Restart ─────────────────────────────────────────────────────────────────
+function restartGame() {
+  // Destroy all active tower graphics
+  towerPairs.forEach(function (pair) {
+    pair.gfxTop.destroy();
+    pair.gfxBot.destroy();
+  });
+  towerPairs = [];
+
+  score = 0;
+  scoreText.setText("\uD83C\uDFC6 0");
+  scoreText.setAlpha(0);
+
+  deathOverlay.setVisible(false);
+
+  crownLabel.setPosition(110, GAME_H / 2);
+  crownLabel.setAngle(0);
+  crownLabel.body.setVelocity(0, 0);
+  crownLabel.body.allowGravity = false;
+
+  hoverTween = this.tweens.add({
+    targets: crownLabel, y: "+=16", duration: 650,
+    yoyo: true, repeat: -1, ease: "Sine.easeInOut"
+  });
+
+  startOverlay.setVisible(true);
+  gameState = "start";
+}
+
+function getBest() {
+  return parseInt(localStorage.getItem("flappyRoyale_best") || "0");
+}
+    </script>
+  </body>
+</html>
+
