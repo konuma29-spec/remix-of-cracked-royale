@@ -171,6 +171,13 @@ export function MainMenu({
               className="absolute inset-0 w-full h-full object-contain"
               style={{ filter: "brightness(2) contrast(1.1)" }}
             />
+          ) : gameMode === "Boss Battle" ? (
+            /* Boss Battle mode image */
+            <img
+              src="https://i.ytimg.com/vi/xSQ1-ADCi6c/sddefault.jpg"
+              alt="Boss Battle"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           ) : (
             <>
               {/* Arena themed background */}
