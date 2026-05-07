@@ -171,6 +171,13 @@ export function MainMenu({
               className="absolute inset-0 w-full h-full object-contain"
               style={{ filter: "brightness(2) contrast(1.1)" }}
             />
+          ) : gameMode === "Boss Battle" ? (
+            /* Boss Battle mode image */
+            <img
+              src="https://i.ytimg.com/vi/xSQ1-ADCi6c/sddefault.jpg"
+              alt="Boss Battle"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           ) : (
             <>
               {/* Arena themed background */}
@@ -223,18 +230,24 @@ export function MainMenu({
 
           {/* Tap indicator */}
           <div className="absolute bottom-2 right-2 bg-black/40 px-2 py-0.5 rounded text-[10px] text-white/70">
-            {gameMode === "Mega Draft" ? "Mega Draft" : "Tap for Trophy Road"}
+            {gameMode === "Mega Draft"
+              ? "Mega Draft"
+              : gameMode === "Boss Battle"
+                ? "Boss Battle"
+                : "Tap for Trophy Road"}
           </div>
 
           {/* Unclaimed Trophy Road Chests Badge */}
-          {unclaimedTrophyChests > 0 && gameMode !== "Mega Draft" && (
-            <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-gradient-to-r from-purple-600 to-purple-800 px-2 py-1 rounded-lg border border-purple-400 shadow-lg animate-pulse">
-              <Gift className="w-4 h-4 text-purple-200" />
-              <span className="text-white font-bold text-sm">
-                {unclaimedTrophyChests}
-              </span>
-            </div>
-          )}
+          {unclaimedTrophyChests > 0 &&
+            gameMode !== "Mega Draft" &&
+            gameMode !== "Boss Battle" && (
+              <div className="absolute bottom-2 left-2 flex items-center gap-1 bg-gradient-to-r from-purple-600 to-purple-800 px-2 py-1 rounded-lg border border-purple-400 shadow-lg animate-pulse">
+                <Gift className="w-4 h-4 text-purple-200" />
+                <span className="text-white font-bold text-sm">
+                  {unclaimedTrophyChests}
+                </span>
+              </div>
+            )}
         </button>
 
         {/* Arena Name Badge */}
@@ -243,15 +256,25 @@ export function MainMenu({
             "mt-3 px-4 py-1 rounded-full border border-amber-500/40",
             gameMode === "Mega Draft"
               ? "bg-gradient-to-r from-purple-800 to-purple-600"
-              : `bg-gradient-to-r ${currentArena.bgGradient}`,
+              : gameMode === "Boss Battle"
+                ? "bg-gradient-to-r from-red-800 to-red-600"
+                : `bg-gradient-to-r ${currentArena.bgGradient}`,
           )}
         >
           <div className="flex items-center gap-2">
             <span className="text-lg">
-              {gameMode === "Mega Draft" ? "🃏" : currentArena.emoji}
+              {gameMode === "Mega Draft"
+                ? "🃏"
+                : gameMode === "Boss Battle"
+                  ? "💀"
+                  : currentArena.emoji}
             </span>
             <span className="text-white font-semibold text-sm">
-              {gameMode === "Mega Draft" ? "Mega Draft" : currentArena.name}
+              {gameMode === "Mega Draft"
+                ? "Mega Draft"
+                : gameMode === "Boss Battle"
+                  ? "Boss Battle"
+                  : currentArena.name}
             </span>
           </div>
         </div>
