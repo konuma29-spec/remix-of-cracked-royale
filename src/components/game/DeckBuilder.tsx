@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { Swords, Check, X, Info, ArrowLeft, Plus, TrendingDown, Search } from 'lucide-react';
 import { getCardLevel, getLevelMultiplier } from '@/lib/cardLevels';
 import { hasEvolution, getEvolution } from '@/data/evolutions';
+import { ElixirIcon } from './ElixirIcon';
 
 export interface CardBalanceInfo {
   cardId: string;
@@ -250,7 +251,7 @@ export function DeckBuilder({
         <div className="flex justify-between items-center mb-3">
           <span className="text-sm font-medium">Deck {editingDeckId} ({selectedDeck.length}/8)</span>
           <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground">Avg: ⚡{avgElixir}</span>
+            <span className="text-xs text-muted-foreground inline-flex items-center gap-1">Avg: <ElixirIcon />{avgElixir}</span>
             {selectedDeck.length > 0 && (
               <Button
                 variant="ghost"
@@ -510,7 +511,7 @@ export function DeckBuilder({
                   ⚔️ {isNerfed ? Math.round(selectedCard.damage * nerfMultiplier) : selectedCard.damage}
                   {isNerfed && <span className="text-[9px] text-muted-foreground line-through ml-1">{selectedCard.damage}</span>}
                 </span>
-                <span>⚡ {selectedCard.elixirCost}</span>
+                <span className="inline-flex items-center gap-1"><ElixirIcon /> {selectedCard.elixirCost}</span>
               </div>
               
               {/* Nerf details */}

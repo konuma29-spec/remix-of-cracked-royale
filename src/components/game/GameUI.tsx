@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Zap, X, MessageCircle, Wifi, WifiOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getCurrentArena } from "@/data/arenas";
+import { ElixirIcon } from "./ElixirIcon";
 import {
   MultiplayerBattleState,
   CardPlacement,
@@ -619,7 +620,7 @@ export function GameUI({
                 {gameState.playerElixir <
                 (gameState.playerHand[gameState.selectedCardIndex]
                   ?.elixirCost || 0)
-                  ? "⚡ Not enough elixir!"
+                  ? <><ElixirIcon /> Not enough elixir!</>
                   : hasBonusZones
                     ? "🎯 New zones unlocked!"
                     : "Tap arena to deploy!"}

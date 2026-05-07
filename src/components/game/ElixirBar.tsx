@@ -1,4 +1,5 @@
 import { cn } from '@/lib/utils';
+import { ElixirIcon } from './ElixirIcon';
 
 interface ElixirBarProps {
   elixir: number;
@@ -16,7 +17,7 @@ export function ElixirBar({ elixir, isSuddenDeath = false }: ElixirBarProps) {
           "text-sm font-bold transition-colors duration-300",
           isSuddenDeath ? "text-orange-400" : "text-accent"
         )}>
-          ⚡ Elixir {isSuddenDeath && <span className="text-xs">(2X)</span>}
+          <ElixirIcon /> Elixir {isSuddenDeath && <span className="text-xs">(2X)</span>}
         </span>
         <span className={cn(
           "text-lg font-bold transition-colors duration-300",
