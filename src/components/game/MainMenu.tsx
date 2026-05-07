@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { getBannerById } from "@/data/banners";
 import { getCurrentArena, ARENAS } from "@/data/arenas";
 import { getCardById } from "@/data/cards";
+import { ChestIcon } from "./ChestIcon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -298,9 +299,9 @@ export function MainMenu({
                 )}
               >
                 {hasChest ? (
-                  <span className="text-2xl animate-bounce">🎁</span>
+                  <ChestIcon className="w-8 h-8 animate-bounce" />
                 ) : (
-                  <span className="text-2xl opacity-30">📦</span>
+                  <ChestIcon className="w-8 h-8" locked />
                 )}
               </button>
             );
