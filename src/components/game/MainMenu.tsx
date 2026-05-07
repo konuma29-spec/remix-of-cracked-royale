@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { getBannerById } from "@/data/banners";
 import { getCurrentArena, ARENAS } from "@/data/arenas";
 import { getCardById } from "@/data/cards";
+import { ChestIcon } from "./ChestIcon";
 import {
   DropdownMenu,
   DropdownMenuContent,

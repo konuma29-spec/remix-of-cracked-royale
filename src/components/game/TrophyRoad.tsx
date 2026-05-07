@@ -6,6 +6,7 @@ import { ARENAS, getCurrentArena, getNextArena, Arena } from '@/data/arenas';
 import { ChestReward } from './ChestReward';
 import { BulkChestReward } from './BulkChestReward';
 import { ChestReward as ChestRewardType } from '@/types/game';
+import { ChestIcon } from './ChestIcon';
 
 interface TrophyRoadProps {
   trophies: number;
