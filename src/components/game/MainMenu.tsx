@@ -298,9 +298,9 @@ export function MainMenu({
                 )}
               >
                 {hasChest ? (
-                  <span className="text-2xl animate-bounce">🎁</span>
+                  <ChestIcon className="w-8 h-8 animate-bounce" />
                 ) : (
-                  <span className="text-2xl opacity-30">📦</span>
+                  <ChestIcon className="w-8 h-8" locked />
                 )}
               </button>
             );

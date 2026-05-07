@@ -335,14 +335,14 @@ export function TrophyRoad({ trophies, onClose, onClaimReward, onGenerateReward,
                             <Check className="w-7 h-7 text-green-400" />
                           ) : isUnlocked ? (
                             <div className="relative">
-                              <div className="text-3xl">📦</div>
+                              <ChestIcon className="w-10 h-10" />
                               <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full flex items-center justify-center">
                                 <Gift className="w-2.5 h-2.5 text-white" />
                               </div>
                             </div>
                           ) : (
                             <div className="relative">
-                              <div className="text-3xl grayscale opacity-50">📦</div>
+                              <ChestIcon className="w-10 h-10" locked />
                               <Lock className="absolute -bottom-1 -right-1 w-4 h-4 text-gray-500" />
                             </div>
                           )}

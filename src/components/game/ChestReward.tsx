@@ -6,6 +6,7 @@ import { GameCard } from './GameCard';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Sparkles, Gift, Coins, Star, Gem, Shield } from 'lucide-react';
+import { ChestIcon } from './ChestIcon';
 
 interface ChestRewardProps {
   onGenerateReward: (stars: number) => ChestRewardType | null;
@@ -117,13 +118,18 @@ export function ChestReward({ onGenerateReward, onClose }: ChestRewardProps) {
               </div>
             )}
             
-            <div className={cn(
-              'text-8xl transition-transform duration-500',
-              stage === 'opening' && 'animate-bounce',
-              stage === 'clicking' && clicks > 0 && 'animate-pulse'
-            )}>
-              {stage === 'open' ? '✨' : stage === 'opening' ? '📦' : '🎁'}
-            </div>
+            {stage === 'open' ? (
+              <div className="text-8xl">✨</div>
+            ) : (
+              <ChestIcon
+                spinning={stage === 'opening'}
+                className={cn(
+                  'w-40 h-40 transition-transform duration-300',
+                  stage === 'clicking' && clicks > 0 && 'chest-pop',
+                )}
+                key={`chest-${clicks}`}
+              />
+            )}
             
             {stage === 'opening' && (
               <>
