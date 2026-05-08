@@ -1590,9 +1590,8 @@ export function useGameState(
             return unit;
           }
 
-          // For units that attack other units — re-evaluate every tick.
-          // Default: march toward the nearest enemy tower.
-          // Switch to a unit only if it is closer than that tower.
+          // For units that attack other units — lock onto current target
+          // until it dies; only pick a new one when targetId is null.
           let currentTarget: (Unit | Tower | Building) | null = null;
 
           // Clear stale target reference (dead / removed)
@@ -1602,50 +1601,56 @@ export function useGameState(
               ...validEnemyBuildings,
               ...validEnemyTowers,
             ];
-            if (!allTargets.find((t) => t.id === unit.targetId)) {
+            const existing = allTargets.find((t) => t.id === unit.targetId);
+            if (existing) {
+              currentTarget = existing;
+            } else {
               unit.targetId = null;
             }
           }
 
-          // Find nearest enemy tower
-          let nearestTower: Tower | null = null;
-          let nearestTowerDist = Infinity;
-          for (const tower of validEnemyTowers) {
-            const dist = getDistance(unit.position, tower.position);
-            if (dist < nearestTowerDist) {
-              nearestTowerDist = dist;
-              nearestTower = tower;
+          // Only pick a new target when we don't have one
+          if (!currentTarget) {
+            // Find nearest enemy tower
+            let nearestTower: Tower | null = null;
+            let nearestTowerDist = Infinity;
+            for (const tower of validEnemyTowers) {
+              const dist = getDistance(unit.position, tower.position);
+              if (dist < nearestTowerDist) {
+                nearestTowerDist = dist;
+                nearestTower = tower;
+              }
             }
-          }
 
-          // Find nearest valid enemy unit
-          let nearestUnit: Unit | null = null;
-          let nearestUnitDist = Infinity;
-          for (const enemy of validEnemyUnits) {
-            const dist = getDistance(unit.position, enemy.position);
-            if (dist < nearestUnitDist) {
-              nearestUnitDist = dist;
-              nearestUnit = enemy;
+            // Find nearest valid enemy unit
+            let nearestUnit: Unit | null = null;
+            let nearestUnitDist = Infinity;
+            for (const enemy of validEnemyUnits) {
+              const dist = getDistance(unit.position, enemy.position);
+              if (dist < nearestUnitDist) {
+                nearestUnitDist = dist;
+                nearestUnit = enemy;
+              }
             }
-          }
 
-          // Target the nearest unit if it is closer than the nearest tower;
-          // otherwise keep marching toward the tower.
-          if (nearestUnit && nearestUnitDist < nearestTowerDist) {
-            currentTarget = nearestUnit;
-          } else if (nearestTower) {
-            currentTarget = nearestTower;
-          } else if (nearestUnit) {
-            // No tower alive — attack the unit
-            currentTarget = nearestUnit;
-          } else {
-            // Fall back to nearest enemy building
-            let nearestBuildingDist = Infinity;
-            for (const building of validEnemyBuildings) {
-              const dist = getDistance(unit.position, building.position);
-              if (dist < nearestBuildingDist) {
-                nearestBuildingDist = dist;
-                currentTarget = building;
+            // Target the nearest unit if it is closer than the nearest tower;
+            // otherwise keep marching toward the tower.
+            if (nearestUnit && nearestUnitDist < nearestTowerDist) {
+              currentTarget = nearestUnit;
+            } else if (nearestTower) {
+              currentTarget = nearestTower;
+            } else if (nearestUnit) {
+              // No tower alive — attack the unit
+              currentTarget = nearestUnit;
+            } else {
+              // Fall back to nearest enemy building
+              let nearestBuildingDist = Infinity;
+              for (const building of validEnemyBuildings) {
+                const dist = getDistance(unit.position, building.position);
+                if (dist < nearestBuildingDist) {
+                  nearestBuildingDist = dist;
+                  currentTarget = building;
+                }
               }
             }
           }
@@ -1919,9 +1924,8 @@ export function useGameState(
             return unit;
           }
 
-          // For units that attack other units — re-evaluate every tick.
-          // Default: march toward the nearest player tower.
-          // Switch to a unit only if it is closer than that tower.
+          // For units that attack other units — lock onto current target
+          // until it dies; only pick a new one when targetId is null.
           let currentTarget: (Unit | Tower | Building) | null = null;
 
           // Clear stale target reference (dead / removed)
@@ -1931,50 +1935,56 @@ export function useGameState(
               ...validPlayerBuildings,
               ...validPlayerTowers,
             ];
-            if (!allTargets.find((t) => t.id === unit.targetId)) {
+            const existing = allTargets.find((t) => t.id === unit.targetId);
+            if (existing) {
+              currentTarget = existing;
+            } else {
               unit.targetId = null;
             }
           }
 
-          // Find nearest player tower
-          let nearestTower: Tower | null = null;
-          let nearestTowerDist = Infinity;
-          for (const tower of validPlayerTowers) {
-            const dist = getDistance(unit.position, tower.position);
-            if (dist < nearestTowerDist) {
-              nearestTowerDist = dist;
-              nearestTower = tower;
+          // Only pick a new target when we don't have one
+          if (!currentTarget) {
+            // Find nearest player tower
+            let nearestTower: Tower | null = null;
+            let nearestTowerDist = Infinity;
+            for (const tower of validPlayerTowers) {
+              const dist = getDistance(unit.position, tower.position);
+              if (dist < nearestTowerDist) {
+                nearestTowerDist = dist;
+                nearestTower = tower;
+              }
             }
-          }
 
-          // Find nearest valid player unit
-          let nearestUnit: Unit | null = null;
-          let nearestUnitDist = Infinity;
-          for (const playerUnit of validPlayerUnits) {
-            const dist = getDistance(unit.position, playerUnit.position);
-            if (dist < nearestUnitDist) {
-              nearestUnitDist = dist;
-              nearestUnit = playerUnit;
+            // Find nearest valid player unit
+            let nearestUnit: Unit | null = null;
+            let nearestUnitDist = Infinity;
+            for (const playerUnit of validPlayerUnits) {
+              const dist = getDistance(unit.position, playerUnit.position);
+              if (dist < nearestUnitDist) {
+                nearestUnitDist = dist;
+                nearestUnit = playerUnit;
+              }
             }
-          }
 
-          // Target the nearest unit if it is closer than the nearest tower;
-          // otherwise keep marching toward the tower.
-          if (nearestUnit && nearestUnitDist < nearestTowerDist) {
-            currentTarget = nearestUnit;
-          } else if (nearestTower) {
-            currentTarget = nearestTower;
-          } else if (nearestUnit) {
-            // No tower alive — attack the unit
-            currentTarget = nearestUnit;
-          } else {
-            // Fall back to nearest player building
-            let nearestBuildingDist = Infinity;
-            for (const building of validPlayerBuildings) {
-              const dist = getDistance(unit.position, building.position);
-              if (dist < nearestBuildingDist) {
-                nearestBuildingDist = dist;
-                currentTarget = building;
+            // Target the nearest unit if it is closer than the nearest tower;
+            // otherwise keep marching toward the tower.
+            if (nearestUnit && nearestUnitDist < nearestTowerDist) {
+              currentTarget = nearestUnit;
+            } else if (nearestTower) {
+              currentTarget = nearestTower;
+            } else if (nearestUnit) {
+              // No tower alive — attack the unit
+              currentTarget = nearestUnit;
+            } else {
+              // Fall back to nearest player building
+              let nearestBuildingDist = Infinity;
+              for (const building of validPlayerBuildings) {
+                const dist = getDistance(unit.position, building.position);
+                if (dist < nearestBuildingDist) {
+                  nearestBuildingDist = dist;
+                  currentTarget = building;
+                }
               }
             }
           }

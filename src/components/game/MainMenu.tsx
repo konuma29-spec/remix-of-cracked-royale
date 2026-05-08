@@ -24,7 +24,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const GAME_MODES = ["Normal", "Platform", "👑 Flappy Royale", "Mega Draft", "Boss Battle"] as const;
+const GAME_MODES = [
+  "Normal",
+  "Platform",
+  "👑 Flappy Royale",
+  "Mega Draft",
+  "Boss Battle",
+] as const;
 type GameMode = (typeof GAME_MODES)[number];
 
 interface MainMenuProps {
@@ -42,7 +48,7 @@ interface MainMenuProps {
   incomingRequestCount?: number;
   gameMode?: string;
   onGameModeChange?: (mode: string) => void;
-  tutorialHighlight?: 'profile' | 'battle' | null;
+  tutorialHighlight?: "profile" | "battle" | null;
 }
 
 export function MainMenu({
@@ -94,7 +100,8 @@ export function MainMenu({
           onClick={onOpenProfile}
           className={cn(
             "flex items-center gap-3 hover:opacity-80 transition-opacity rounded-lg p-1",
-            tutorialHighlight === 'profile' && "ring-4 ring-yellow-400 ring-offset-2 ring-offset-[#0d1b2a] animate-pulse"
+            tutorialHighlight === "profile" &&
+              "ring-4 ring-yellow-400 ring-offset-2 ring-offset-[#0d1b2a] animate-pulse",
           )}
         >
           <div className="relative">
@@ -400,59 +407,62 @@ export function MainMenu({
           </button>
         )}
 
-        <div className={cn(
-          "flex items-center gap-2 rounded-xl",
-          tutorialHighlight === 'battle' && "ring-4 ring-yellow-400 ring-offset-2 ring-offset-[#1a3a5c] p-1 animate-pulse"
-        )}>
-        {(gameMode === "Platform" || gameMode === "👑 Flappy Royale") ? (
-          <Button
-            onClick={onBattle}
-            className="px-12 h-12 text-xl font-bold gap-2 bg-gradient-to-b from-green-400 via-green-500 to-green-600 hover:from-green-300 hover:via-green-400 hover:to-green-500 border-b-4 border-green-800 text-white rounded-xl shadow-lg transform hover:scale-[1.02] transition-all"
-          >
-            <Play className="w-6 h-6" />
-            Play
-          </Button>
-        ) : (
-        <Button
-          onClick={onBattle}
-          className="px-12 h-12 text-xl font-bold gap-2 bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 hover:from-yellow-200 hover:via-yellow-300 hover:to-yellow-400 border-b-4 border-yellow-700 text-yellow-900 rounded-xl shadow-lg transform hover:scale-[1.02] transition-all"
+        <div
+          className={cn(
+            "flex items-center gap-2 rounded-xl",
+            tutorialHighlight === "battle" &&
+              "ring-4 ring-yellow-400 ring-offset-2 ring-offset-[#1a3a5c] p-1 animate-pulse",
+          )}
         >
-          <Swords className="w-6 h-6" />
-          Battle
-        </Button>
-        )}
-
-        {/* Game mode selector */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button
-              className="h-12 w-14 rounded-xl bg-gradient-to-b from-blue-400 via-blue-500 to-blue-600 border-b-4 border-blue-900 shadow-lg flex flex-col items-center justify-center transform hover:scale-[1.05] transition-all"
-              aria-label="Game mode"
+          {gameMode === "Platform" || gameMode === "👑 Flappy Royale" ? (
+            <Button
+              onClick={onBattle}
+              className="px-12 h-12 text-xl font-bold gap-2 bg-gradient-to-b from-green-400 via-green-500 to-green-600 hover:from-green-300 hover:via-green-400 hover:to-green-500 border-b-4 border-green-800 text-white rounded-xl shadow-lg transform hover:scale-[1.02] transition-all"
             >
-              <span className="text-[9px] font-bold text-white leading-none uppercase tracking-wide">
-                {gameMode}
-              </span>
-              <ChevronDown className="w-3 h-3 text-white mt-0.5" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            align="end"
-            className="bg-[#0d1b2a] border-cyan-900/50"
-          >
-            {GAME_MODES.map((mode) => (
-              <DropdownMenuItem
-                key={mode}
-                onClick={() => onGameModeChange?.(mode)}
-                className={cn(
-                  "text-white font-semibold cursor-pointer focus:bg-purple-700/50 focus:text-white",
-                  gameMode === mode && "bg-purple-800/40",
-                )}
+              <Play className="w-6 h-6" />
+              Play
+            </Button>
+          ) : (
+            <Button
+              onClick={onBattle}
+              className="px-12 h-12 text-xl font-bold gap-2 bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-500 hover:from-yellow-200 hover:via-yellow-300 hover:to-yellow-400 border-b-4 border-yellow-700 text-yellow-900 rounded-xl shadow-lg transform hover:scale-[1.02] transition-all"
+            >
+              <Swords className="w-6 h-6" />
+              Battle
+            </Button>
+          )}
+
+          {/* Game mode selector */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button
+                className="h-12 w-14 rounded-xl bg-gradient-to-b from-blue-400 via-blue-500 to-blue-600 border-b-4 border-blue-900 shadow-lg flex flex-col items-center justify-center transform hover:scale-[1.05] transition-all"
+                aria-label="Game mode"
               >
-                {mode}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                <span className="text-[9px] font-bold text-white leading-none uppercase tracking-wide">
+                  {gameMode}
+                </span>
+                <ChevronDown className="w-3 h-3 text-white mt-0.5" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              align="end"
+              className="bg-[#0d1b2a] border-cyan-900/50"
+            >
+              {GAME_MODES.map((mode) => (
+                <DropdownMenuItem
+                  key={mode}
+                  onClick={() => onGameModeChange?.(mode)}
+                  className={cn(
+                    "text-white font-semibold cursor-pointer focus:bg-purple-700/50 focus:text-white",
+                    gameMode === mode && "bg-purple-800/40",
+                  )}
+                >
+                  {mode}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
