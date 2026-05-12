@@ -158,7 +158,9 @@ export function Tower({ tower }: TowerProps) {
             </span>
           </div>
         )}
-      </div>
+          </div>
+        );
+      })()}
 
       {/* Health bar BELOW tower for all other towers */}
       {!isDestroyed && !showHealthAbove && (
