@@ -94,37 +94,47 @@ export function Tower({ tower }: TowerProps) {
         </div>
       )}
 
-      <div
-        className={cn(
-          "tower-base flex items-center justify-center relative",
-          size,
-          tower.owner === "player" ? "tower-friendly" : "tower-enemy",
-          tower.type === "king" && "tower-king",
-          isAttacking && "scale-110",
-        )}
-        style={{
-          transition: "transform 0.1s ease-out",
-        }}
-      >
-        {tower.type === "king" ? (
-          <img
-            src={tower.owner === "player" ? kingTowerImg : kingTowerEnemyImg}
-            alt="King Tower"
+      {(() => {
+        const usesImage =
+          tower.type === "king" ||
+          (tower.type === "princess" && tower.owner === "opponent");
+        const imgSrc =
+          tower.type === "king"
+            ? tower.owner === "player"
+              ? kingTowerImg
+              : kingTowerEnemyImg
+            : princessTowerEnemyImg;
+        return (
+          <div
             className={cn(
-              "w-full h-full object-contain",
-              isKingInactive && "opacity-60",
+              "flex items-center justify-center relative",
+              size,
+              !usesImage && "tower-base",
+              !usesImage &&
+                (tower.owner === "player" ? "tower-friendly" : "tower-enemy"),
+              !usesImage && tower.type === "king" && "tower-king",
+              isAttacking && "scale-110",
             )}
-          />
-        ) : (
-          <span
-            className={cn(
-              "text-2xl",
-              isKingInactive && "opacity-60",
-            )}
+            style={{
+              transition: "transform 0.1s ease-out",
+            }}
           >
-            👸
-          </span>
-        )}
+            {usesImage ? (
+              <img
+                src={imgSrc}
+                alt={tower.type === "king" ? "King Tower" : "Princess Tower"}
+                className={cn(
+                  "w-full h-full object-contain",
+                  isKingInactive && "opacity-60",
+                )}
+              />
+            ) : (
+              <span
+                className={cn("text-2xl", isKingInactive && "opacity-60")}
+              >
+                👸
+              </span>
+            )}
 
         {/* Sleeping indicator for inactive king tower */}
         {isKingInactive && !isDestroyed && (
