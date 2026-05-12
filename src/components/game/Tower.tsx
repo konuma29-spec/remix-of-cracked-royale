@@ -33,7 +33,7 @@ export function Tower({ tower }: TowerProps) {
     }
   }, [tower.lastAttackTime]);
 
-  const size = tower.type === "king" ? "w-16 h-16" : "w-12 h-12";
+  const size = tower.type === "king" ? "w-24 h-24" : "w-16 h-16";
 
   // For player's king tower, show health above to avoid being covered by UI
   const showHealthAbove = tower.type === "king" && tower.owner === "player";
