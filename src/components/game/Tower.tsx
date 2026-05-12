@@ -97,7 +97,7 @@ export function Tower({ tower }: TowerProps) {
       {(() => {
         const usesImage =
           tower.type === "king" ||
-          (tower.type === "princess" && tower.owner === "opponent");
+          (tower.type === "princess" && tower.owner !== "player");
         const imgSrc =
           tower.type === "king"
             ? tower.owner === "player"
