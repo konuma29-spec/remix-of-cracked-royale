@@ -118,11 +118,10 @@ export function Tower({ tower }: TowerProps) {
           <span
             className={cn(
               "text-2xl",
-              tower.type === "king" && "text-3xl",
               isKingInactive && "opacity-60",
             )}
           >
-            {tower.type === "king" ? "👑" : "👸"}
+            👸
           </span>
         )}
 
