@@ -120,59 +120,7 @@ export function Tower({ tower }: TowerProps) {
               transition: "transform 0.1s ease-out",
             }}
           >
-            {tower.type === "princess" && tower.owner === "player" ? (
-              <svg
-                viewBox="0 0 60 72"
-                className={cn("w-full h-full", isDestroyed && "opacity-40")}
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                {/* Shadow */}
-                <ellipse cx="30" cy="70" rx="14" ry="3" fill="rgba(0,0,0,0.25)" />
-                {/* Base / foundation */}
-                <rect x="10" y="52" width="40" height="10" rx="2" fill="#7a6a50" />
-                <rect x="10" y="52" width="40" height="3" rx="1" fill="#9a8a6a" />
-                {/* Main tower body */}
-                <rect x="13" y="22" width="34" height="32" fill="#5b7fa6" />
-                {/* Stone block texture lines */}
-                <rect x="13" y="28" width="34" height="1.5" fill="rgba(0,0,0,0.18)" />
-                <rect x="13" y="35" width="34" height="1.5" fill="rgba(0,0,0,0.18)" />
-                <rect x="13" y="42" width="34" height="1.5" fill="rgba(0,0,0,0.18)" />
-                <rect x="13" y="49" width="34" height="1.5" fill="rgba(0,0,0,0.18)" />
-                <rect x="21" y="22" width="1.5" height="30" fill="rgba(0,0,0,0.12)" />
-                <rect x="37.5" y="22" width="1.5" height="30" fill="rgba(0,0,0,0.12)" />
-                {/* Highlight on left edge */}
-                <rect x="13" y="22" width="3" height="32" fill="rgba(255,255,255,0.12)" />
-                {/* Tower window */}
-                <rect x="23" y="35" width="14" height="10" rx="7" fill="#1a1a2e" />
-                <rect x="23" y="35" width="14" height="5" rx="7" fill="#2a2a4e" />
-                {/* Battlement / merlons row */}
-                <rect x="11" y="17" width="8" height="7" rx="1" fill="#4a6d94" />
-                <rect x="22" y="17" width="8" height="7" rx="1" fill="#4a6d94" />
-                <rect x="33" y="17" width="8" height="7" rx="1" fill="#4a6d94" />
-                <rect x="44" y="17" width="7" height="7" rx="1" fill="#4a6d94" />
-                {/* Battlement top edge highlight */}
-                <rect x="11" y="17" width="8" height="2" rx="1" fill="#6a8db4" />
-                <rect x="22" y="17" width="8" height="2" rx="1" fill="#6a8db4" />
-                <rect x="33" y="17" width="8" height="2" rx="1" fill="#6a8db4" />
-                <rect x="44" y="17" width="7" height="2" rx="1" fill="#6a8db4" />
-                {/* Battlement floor */}
-                <rect x="11" y="23" width="40" height="2" fill="#4a6d94" />
-                {/* Princess figure */}
-                {/* Crown */}
-                <polygon points="24,10 26,5 28,9 30,3 32,9 34,5 36,10" fill="#f5c842" />
-                {/* Head */}
-                <ellipse cx="30" cy="13" rx="5" ry="5.5" fill="#f5c8a0" />
-                {/* Hair */}
-                <ellipse cx="30" cy="10" rx="5.5" ry="4" fill="#c8803a" />
-                <ellipse cx="24.5" cy="14" rx="2" ry="3.5" fill="#c8803a" />
-                <ellipse cx="35.5" cy="14" rx="2" ry="3.5" fill="#c8803a" />
-                {/* Eyes */}
-                <ellipse cx="27.5" cy="13.5" rx="1.2" ry="1.2" fill="#2a1a0a" />
-                <ellipse cx="32.5" cy="13.5" rx="1.2" ry="1.2" fill="#2a1a0a" />
-                {/* Smile */}
-                <path d="M28 16.5 Q30 18 32 16.5" stroke="#c0705a" strokeWidth="0.8" fill="none" strokeLinecap="round" />
-              </svg>
-            ) : usesImage ? (
+            {usesImage ? (
               <img
                 src={imgSrc}
                 alt={tower.type === "king" ? "King Tower" : "Princess Tower"}
