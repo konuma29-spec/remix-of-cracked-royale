@@ -1,6 +1,7 @@
 import { Tower as TowerType } from "@/types/game";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
+import kingTowerImg from "@/assets/king-tower.png";
 
 interface TowerProps {
   tower: TowerType;
