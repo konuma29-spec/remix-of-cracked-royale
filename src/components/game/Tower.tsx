@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import kingTowerImg from "@/assets/king-tower.png";
 import kingTowerEnemyImg from "@/assets/king-tower-enemy.png";
+import princessTowerEnemyImg from "@/assets/princess-tower-enemy.png";
 
 interface TowerProps {
   tower: TowerType;
