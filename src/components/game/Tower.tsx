@@ -96,15 +96,15 @@ export function Tower({ tower }: TowerProps) {
       )}
 
       {(() => {
-        const usesImage =
-          tower.type === "king" ||
-          (tower.type === "princess" && tower.owner !== "player");
+        const usesImage = tower.type === "king" || tower.type === "princess";
         const imgSrc =
           tower.type === "king"
             ? tower.owner === "player"
               ? kingTowerImg
               : kingTowerEnemyImg
-            : princessTowerEnemyImg;
+            : tower.owner === "player"
+              ? princessTowerPlayerImg
+              : princessTowerEnemyImg;
         return (
           <div
             className={cn(
