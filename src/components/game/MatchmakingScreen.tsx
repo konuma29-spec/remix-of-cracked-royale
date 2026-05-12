@@ -271,10 +271,10 @@ export function MatchmakingScreen({ progress, onReady, isFriendlyBattle, friendl
             <img src={kingTowerEnemyImg} alt="" className="w-20 h-20 object-contain drop-shadow-lg" />
           </div>
           <div className="absolute" style={{ left: 40, top: 70 }}>
-            <img src={princessTowerEnemyImg} alt="" className="w-20 h-20 object-contain drop-shadow-lg" />
+            <img src={princessTowerEnemyImg} alt="" className="w-14 h-14 object-contain drop-shadow-lg" />
           </div>
           <div className="absolute" style={{ right: 40, top: 70 }}>
-            <img src={princessTowerEnemyImg} alt="" className="w-20 h-20 object-contain drop-shadow-lg" />
+            <img src={princessTowerEnemyImg} alt="" className="w-14 h-14 object-contain drop-shadow-lg" />
           </div>
           
           {/* Player Towers */}
@@ -282,10 +282,10 @@ export function MatchmakingScreen({ progress, onReady, isFriendlyBattle, friendl
             <img src={kingTowerImg} alt="" className="w-20 h-20 object-contain drop-shadow-lg" />
           </div>
           <div className="absolute" style={{ left: 40, bottom: 70 }}>
-            <img src={princessTowerPlayerImg} alt="" className="w-20 h-20 object-contain drop-shadow-lg" />
+            <img src={princessTowerPlayerImg} alt="" className="w-24 h-24 object-contain drop-shadow-lg" />
           </div>
           <div className="absolute" style={{ right: 40, bottom: 70 }}>
-            <img src={princessTowerPlayerImg} alt="" className="w-20 h-20 object-contain drop-shadow-lg" />
+            <img src={princessTowerPlayerImg} alt="" className="w-24 h-24 object-contain drop-shadow-lg" />
           </div>
           
           {/* Center decoration */}
