@@ -267,37 +267,25 @@ export function MatchmakingScreen({ progress, onReady, isFriendlyBattle, friendl
           />
           
           {/* Enemy Towers */}
-          <div className="absolute left-1/2 -translate-x-1/2" style={{ top: 24 }}>
-            <div className="w-16 h-16 rounded-lg bg-gradient-to-b from-red-500 to-red-700 border-2 border-red-400 flex items-center justify-center shadow-lg">
-              <span className="text-3xl">👑</span>
-            </div>
+          <div className="absolute left-1/2 -translate-x-1/2" style={{ top: 16 }}>
+            <img src={kingTowerEnemyImg} alt="" className="w-20 h-20 object-contain drop-shadow-lg" />
           </div>
-          <div className="absolute" style={{ left: 44, top: 74 }}>
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-b from-red-500 to-red-700 border-2 border-red-400 flex items-center justify-center shadow-lg">
-              <span className="text-2xl">👸</span>
-            </div>
+          <div className="absolute" style={{ left: 40, top: 70 }}>
+            <img src={princessTowerEnemyImg} alt="" className="w-14 h-14 object-contain drop-shadow-lg" />
           </div>
-          <div className="absolute" style={{ right: 44, top: 74 }}>
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-b from-red-500 to-red-700 border-2 border-red-400 flex items-center justify-center shadow-lg">
-              <span className="text-2xl">👸</span>
-            </div>
+          <div className="absolute" style={{ right: 40, top: 70 }}>
+            <img src={princessTowerEnemyImg} alt="" className="w-14 h-14 object-contain drop-shadow-lg" />
           </div>
           
           {/* Player Towers */}
-          <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: 24 }}>
-            <div className="w-16 h-16 rounded-lg bg-gradient-to-b from-blue-500 to-blue-700 border-2 border-blue-400 flex items-center justify-center shadow-lg">
-              <span className="text-3xl">👑</span>
-            </div>
+          <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: 16 }}>
+            <img src={kingTowerImg} alt="" className="w-20 h-20 object-contain drop-shadow-lg" />
           </div>
-          <div className="absolute" style={{ left: 44, bottom: 74 }}>
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-b from-blue-500 to-blue-700 border-2 border-blue-400 flex items-center justify-center shadow-lg">
-              <span className="text-2xl">👸</span>
-            </div>
+          <div className="absolute" style={{ left: 40, bottom: 70 }}>
+            <img src={princessTowerPlayerImg} alt="" className="w-14 h-14 object-contain drop-shadow-lg" />
           </div>
-          <div className="absolute" style={{ right: 44, bottom: 74 }}>
-            <div className="w-12 h-12 rounded-lg bg-gradient-to-b from-blue-500 to-blue-700 border-2 border-blue-400 flex items-center justify-center shadow-lg">
-              <span className="text-2xl">👸</span>
-            </div>
+          <div className="absolute" style={{ right: 40, bottom: 70 }}>
+            <img src={princessTowerPlayerImg} alt="" className="w-14 h-14 object-contain drop-shadow-lg" />
           </div>
           
           {/* Center decoration */}
