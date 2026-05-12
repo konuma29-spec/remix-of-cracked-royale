@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { PlayerProgress } from '@/types/game';
 import { getBannerById, allBanners } from '@/data/banners';
+import { getCurrentArena } from '@/data/arenas';
 import { Trophy } from 'lucide-react';
 import kingTowerImg from '@/assets/king-tower.png';
 import kingTowerEnemyImg from '@/assets/king-tower-enemy.png';
@@ -205,8 +206,8 @@ export function MatchmakingScreen({ progress, onReady, isFriendlyBattle, friendl
           className="relative rounded-xl overflow-hidden border-4 border-muted/50"
           style={{ width: 320, height: 420 }}
         >
-          {/* Arena grass field */}
-          <div className="absolute inset-0 bg-gradient-to-b from-emerald-800 via-emerald-700 to-emerald-800" />
+          {/* Arena grass field with dynamic gradient based on arena */}
+          <div className={`absolute inset-0 bg-gradient-to-b ${getCurrentArena(playerTrophies).bgGradient}`} />
           
           {/* Grid pattern */}
           <div 
