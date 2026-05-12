@@ -279,13 +279,13 @@ export function MatchmakingScreen({ progress, onReady, isFriendlyBattle, friendl
           
           {/* Player Towers */}
           <div className="absolute left-1/2 -translate-x-1/2" style={{ bottom: 16 }}>
-            <img src={kingTowerImg} alt="" className="w-20 h-20 object-contain drop-shadow-lg" />
+            <img src={kingTowerImg} alt="" className="w-20 h-20 object-contain drop-shadow-lg opacity-100" />
           </div>
           <div className="absolute" style={{ left: 40, bottom: 70 }}>
-            <img src={princessTowerPlayerImg} alt="" className="w-20 h-20 object-contain drop-shadow-lg" />
+            <img src={princessTowerPlayerImg} alt="" className="w-24 h-24 object-contain drop-shadow-lg" />
           </div>
           <div className="absolute" style={{ right: 40, bottom: 70 }}>
-            <img src={princessTowerPlayerImg} alt="" className="w-20 h-20 object-contain drop-shadow-lg" />
+            <img src={princessTowerPlayerImg} alt="" className="w-24 h-24 object-contain drop-shadow-lg" />
           </div>
           
           {/* Center decoration */}
