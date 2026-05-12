@@ -106,7 +106,7 @@ export function Tower({ tower }: TowerProps) {
       >
         {tower.type === "king" && tower.owner === "player" ? (
           <img
-            src="https://liquipedia.net/commons/images/thumb/e/e4/Clash_Royale_icon_King_Tower_Blue.png/118px-Clash_Royale_icon_King_Tower_Blue.png"
+            src={kingTowerImg}
             alt="King Tower"
             className={cn(
               "w-full h-full object-contain",
