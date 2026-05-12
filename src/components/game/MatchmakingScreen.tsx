@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { PlayerProgress } from '@/types/game';
 import { getBannerById, allBanners } from '@/data/banners';
 import { Trophy } from 'lucide-react';
+import kingTowerImg from '@/assets/king-tower.png';
+import kingTowerEnemyImg from '@/assets/king-tower-enemy.png';
+import princessTowerPlayerImg from '@/assets/princess-tower-player.png';
+import princessTowerEnemyImg from '@/assets/princess-tower-enemy.png';
 
 interface MatchmakingScreenProps {
   progress: PlayerProgress;
