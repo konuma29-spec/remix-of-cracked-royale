@@ -105,9 +105,9 @@ export function Tower({ tower }: TowerProps) {
           transition: "transform 0.1s ease-out",
         }}
       >
-        {tower.type === "king" && tower.owner === "player" ? (
+        {tower.type === "king" ? (
           <img
-            src={kingTowerImg}
+            src={tower.owner === "player" ? kingTowerImg : kingTowerEnemyImg}
             alt="King Tower"
             className={cn(
               "w-full h-full object-contain",
