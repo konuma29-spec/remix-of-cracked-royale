@@ -25,9 +25,9 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
     <div
       className="h-screen w-screen overflow-hidden relative"
       style={{
-        backgroundImage: "url('/OIP.webp')",
-        backgroundSize: "contain",
-        backgroundPosition: "center top",
+        backgroundImage: "url('/loading-bg.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
       }}
     >
