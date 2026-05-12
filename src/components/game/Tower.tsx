@@ -2,6 +2,7 @@ import { Tower as TowerType } from "@/types/game";
 import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import kingTowerImg from "@/assets/king-tower.png";
+import kingTowerEnemyImg from "@/assets/king-tower-enemy.png";
 
 interface TowerProps {
   tower: TowerType;
@@ -104,9 +105,9 @@ export function Tower({ tower }: TowerProps) {
           transition: "transform 0.1s ease-out",
         }}
       >
-        {tower.type === "king" && tower.owner === "player" ? (
+        {tower.type === "king" ? (
           <img
-            src={kingTowerImg}
+            src={tower.owner === "player" ? kingTowerImg : kingTowerEnemyImg}
             alt="King Tower"
             className={cn(
               "w-full h-full object-contain",
@@ -117,11 +118,10 @@ export function Tower({ tower }: TowerProps) {
           <span
             className={cn(
               "text-2xl",
-              tower.type === "king" && "text-3xl",
               isKingInactive && "opacity-60",
             )}
           >
-            {tower.type === "king" ? "👑" : "👸"}
+            👸
           </span>
         )}
 
