@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import kingTowerImg from "@/assets/king-tower.png";
 import kingTowerEnemyImg from "@/assets/king-tower-enemy.png";
 import princessTowerEnemyImg from "@/assets/princess-tower-enemy.png";
+import princessTowerPlayerImg from "@/assets/princess-tower-player.png";
 
 interface TowerProps {
   tower: TowerType;
@@ -32,7 +33,7 @@ export function Tower({ tower }: TowerProps) {
     }
   }, [tower.lastAttackTime]);
 
-  const size = tower.type === "king" ? "w-16 h-16" : "w-12 h-12";
+  const size = tower.type === "king" ? "w-24 h-24" : "w-16 h-16";
 
   // For player's king tower, show health above to avoid being covered by UI
   const showHealthAbove = tower.type === "king" && tower.owner === "player";
@@ -95,15 +96,15 @@ export function Tower({ tower }: TowerProps) {
       )}
 
       {(() => {
-        const usesImage =
-          tower.type === "king" ||
-          (tower.type === "princess" && tower.owner !== "player");
+        const usesImage = tower.type === "king" || tower.type === "princess";
         const imgSrc =
           tower.type === "king"
             ? tower.owner === "player"
               ? kingTowerImg
               : kingTowerEnemyImg
-            : princessTowerEnemyImg;
+            : tower.owner === "player"
+              ? princessTowerPlayerImg
+              : princessTowerEnemyImg;
         return (
           <div
             className={cn(
