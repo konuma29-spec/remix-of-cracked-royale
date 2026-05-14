@@ -114,7 +114,7 @@ export function DeckBuilder({
   
   // Map deck IDs to cards, handling evo- prefix (keep nulls for proper indexing)
   const deckCards = selectedDeck.concat(Array(8 - selectedDeck.length).fill(null)).map((id, idx) => {
-    if (!id) return null;
+    if (!id || id === '') return null;
     const isEvo = id.startsWith('evo-');
     const baseId = isEvo ? id.replace('evo-', '') : id;
     const baseCard = allCards.find(c => c.id === baseId);
@@ -143,20 +143,58 @@ export function DeckBuilder({
     const baseCardId = cardId.replace('evo-', '');
     
     // Check if any version of this card is in deck
-    const normalInDeck = selectedDeck.includes(baseCardId);
-    const evoInDeck = selectedDeck.includes(`evo-${baseCardId}`);
+    const normalIndex = selectedDeck.indexOf(baseCardId);
+    const evoIndex = selectedDeck.indexOf(`evo-${baseCardId}`);
+    const inDeck = normalIndex !== -1 || evoIndex !== -1;
     
-    if (normalInDeck || evoInDeck) {
-      // Remove whichever version is in deck
-      setSelectedDeck(prev => prev.filter(id => id !== baseCardId && id !== `evo-${baseCardId}`));
-    } else if (selectedDeck.length < 8) {
-      // If trying to add evolution card, only allow in first 2 slots
-      if (useEvolution && selectedDeck.length >= 2) {
-        return; // Block evolution card from being added to slot 3+
+    if (inDeck) {
+      // Remove by replacing with empty string (keeps position)
+      const indexToRemove = normalIndex !== -1 ? normalIndex : evoIndex;
+      setSelectedDeck(prev => {
+        const updated = [...prev];
+        updated[indexToRemove] = '';
+        return updated;
+      });
+    } else {
+      // Find first empty slot or append if needed
+      const filledCount = selectedDeck.filter(id => id && id !== '').length;
+      if (filledCount < 8) {
+        // If trying to add evolution card, only allow in first 2 slots
+        if (useEvolution) {
+          const evoSlot0Filled = selectedDeck[0] && selectedDeck[0] !== '';
+          const evoSlot1Filled = selectedDeck[1] && selectedDeck[1] !== '';
+          if (evoSlot0Filled && evoSlot1Filled) {
+            return; // Block evolution card from being added when slots 0-1 are full
+          }
+          // Add to first empty evo slot
+          const firstEmptyEvo = selectedDeck[0] === '' || selectedDeck[0] === undefined ? 0 : 1;
+          if (selectedDeck[firstEmptyEvo] === undefined) {
+            // Pad deck to at least this position
+            while (selectedDeck.length <= firstEmptyEvo) {
+              selectedDeck.push('');
+            }
+          }
+          setSelectedDeck(prev => {
+            const updated = [...prev];
+            updated[firstEmptyEvo] = finalCardId;
+            return updated;
+          });
+        } else {
+          // Add to first empty slot
+          const firstEmptySlot = selectedDeck.indexOf('');
+          if (firstEmptySlot !== -1) {
+            setSelectedDeck(prev => {
+              const updated = [...prev];
+              updated[firstEmptySlot] = finalCardId;
+              return updated;
+            });
+          } else {
+            // No empty slot, append
+            setSelectedDeck(prev => [...prev, finalCardId]);
+          }
+        }
       }
-      setSelectedDeck(prev => [...prev, finalCardId]);
     }
-    // If deck is full and card not in deck, do nothing (block add)
   };
   
   // Handle card double-click with evolution check
@@ -180,21 +218,25 @@ export function DeckBuilder({
   };
 
   const handleSave = () => {
-    if (selectedDeck.length === 8) {
-      onSaveDeck(editingDeckId, selectedDeck);
+    // Filter out empty slots and check if we have exactly 8 cards
+    const filledCards = selectedDeck.filter(id => id && id !== '');
+    if (filledCards.length === 8) {
+      onSaveDeck(editingDeckId, filledCards);
     }
   };
 
   const handleSetActive = () => {
-    if (selectedDeck.length === 8) {
-      onSaveDeck(editingDeckId, selectedDeck);
+    // Filter out empty slots and check if we have exactly 8 cards
+    const filledCards = selectedDeck.filter(id => id && id !== '');
+    if (filledCards.length === 8) {
+      onSaveDeck(editingDeckId, filledCards);
       onSetActiveDeck(editingDeckId);
     }
   };
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
     // Only allow dragging if there's an actual card at this index
-    if (index >= selectedDeck.length) {
+    if (!deckCards[index]) {
       e.preventDefault();
       return;
     }
@@ -299,10 +341,10 @@ export function DeckBuilder({
       {/* Current Deck */}
       <div className="bg-card/50 rounded-xl p-4 border border-border w-full max-w-md">
         <div className="flex justify-between items-center mb-3">
-          <span className="text-sm font-medium">Deck {editingDeckId} ({selectedDeck.length}/8)</span>
+          <span className="text-sm font-medium">Deck {editingDeckId} ({selectedDeck.filter(id => id && id !== '').length}/8)</span>
           <div className="flex items-center gap-3">
             <span className="text-xs text-muted-foreground inline-flex items-center gap-1">Avg: <ElixirIcon />{avgElixir}</span>
-            {selectedDeck.length > 0 && (
+            {selectedDeck.filter(id => id && id !== '').length > 0 && (
               <Button
                 variant="ghost"
                 size="sm"
@@ -355,10 +397,12 @@ export function DeckBuilder({
                           card={displayCard} 
                           size="small"
                           onClick={() => {
-                            // Remove the card using original ID from selectedDeck
-                            if (cardId) {
-                              setSelectedDeck(prev => prev.filter(id => id !== cardId));
-                            }
+                            // Remove card at this position by replacing with empty string (keeps position)
+                            setSelectedDeck(prev => {
+                              const updated = [...prev];
+                              updated[idx] = '';
+                              return updated;
+                            });
                           }}
                           level={getCardLevel(cardCopies[card.id.replace('evo-', '')] || 0)}
                           showLevel={true}
@@ -367,10 +411,12 @@ export function DeckBuilder({
                     })()}
                     <button
                       onClick={() => {
-                        // Remove the card using original ID from selectedDeck
-                        if (cardId) {
-                          setSelectedDeck(prev => prev.filter(id => id !== cardId));
-                        }
+                        // Remove card at this position by replacing with empty string (keeps position)
+                        setSelectedDeck(prev => {
+                          const updated = [...prev];
+                          updated[idx] = '';
+                          return updated;
+                        });
                       }}
                       className="absolute -top-1 -right-1 w-4 h-4 bg-destructive rounded-full flex items-center justify-center hover:scale-110 transition-transform z-20"
                     >
