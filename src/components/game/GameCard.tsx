@@ -83,20 +83,14 @@ export function GameCard({
         />
       </div>
       
-      {/* Health & damage - hide on tiny size */}
+      {/* Card name - hide on tiny size */}
       {size !== 'tiny' && (
-        <div className="w-full text-center flex justify-center gap-1">
+        <div className="w-full text-center">
           <span className={cn(
             'font-bold text-white drop-shadow-md leading-tight',
-            size === 'small' ? 'text-[7px]' : size === 'medium' ? 'text-[8px]' : 'text-[10px]'
+            size === 'small' ? 'text-[8px]' : size === 'medium' ? 'text-[9px]' : 'text-xs'
           )}>
-            ❤️{card.health}
-          </span>
-          <span className={cn(
-            'font-bold text-white drop-shadow-md leading-tight',
-            size === 'small' ? 'text-[7px]' : size === 'medium' ? 'text-[8px]' : 'text-[10px]'
-          )}>
-            ⚔️{card.damage}
+            {card.name}
           </span>
         </div>
       )}
@@ -132,8 +126,12 @@ export function GameCard({
       )}
 
       {showDetails && (
-        <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 bg-card/95 backdrop-blur p-2 rounded-lg border border-border min-w-32 z-10 text-center">
+        <div className="absolute -bottom-16 left-1/2 -translate-x-1/2 bg-card/95 backdrop-blur p-2 rounded-lg border border-border min-w-32 z-10 text-center">
           <p className="text-[10px] text-muted-foreground">{card.description}</p>
+          <div className="flex justify-center gap-3 mt-1 text-[9px]">
+            <span>❤️ {card.health}</span>
+            <span>⚔️ {card.damage}</span>
+          </div>
         </div>
       )}
     </div>
