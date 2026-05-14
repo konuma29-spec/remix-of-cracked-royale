@@ -12,6 +12,7 @@ const CARD_IMAGES: Record<string, string> = {
   'evo-bomber': '/evo-bomber.png',
   'minions': '/minions.png',
   'ice-spirit': '/ice-spirit.png',
+  'evo-ice-spirit': '/evo-ice-spirit.png',
   'fire-spirit': '/fire-spirit.png',
   'heal-spirit': '/heal-spirit.png',
   'electro-spirit': '/electro-spirit.png',
