@@ -2,6 +2,7 @@ import { CardDefinition } from '@/types/game';
 
 const CARD_IMAGES: Record<string, string> = {
   'knight': '/knight.png',
+  'evo-knight': '/evo-knight.png',
   'archers': '/archers.png',
   'goblins': '/goblins.png',
 };
@@ -26,7 +27,7 @@ interface CardIconProps {
  */
 export function CardIcon({ card, imageClassName, emojiClassName, className }: CardIconProps) {
   const baseId = card.id.replace(/^evo-/, '');
-  const imageSrc = CARD_IMAGES[baseId] ?? CARD_IMAGES[card.id];
+  const imageSrc = CARD_IMAGES[card.id] ?? CARD_IMAGES[baseId];
   if (imageSrc) {
     return (
       <img
