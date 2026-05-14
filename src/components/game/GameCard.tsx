@@ -62,14 +62,9 @@ export function GameCard({
       )}
       onClick={() => onClick?.()}
     >
-      {/* Elixir cost */}
-      <div className="card-cost text-white font-bold text-xs">
-        {card.elixirCost}
-      </div>
-      
       {/* Card art area */}
       <div 
-        className="w-full flex-1 flex items-center justify-center rounded-md my-1"
+        className="w-full flex-1 flex items-center justify-center rounded-md my-1 overflow-hidden"
         style={{ 
           background: `linear-gradient(135deg, ${card.color}40, ${card.color}20)`,
         }}
@@ -77,8 +72,7 @@ export function GameCard({
         <CardIcon
           card={card}
           imageClassName={cn(
-            'object-contain',
-            size === 'tiny' ? 'w-6 h-6' : size === 'small' ? 'w-8 h-8' : size === 'medium' ? 'w-10 h-10' : 'w-16 h-16',
+            'w-full h-full object-cover',
             isSelected && 'animate-bounce'
           )}
           emojiClassName={cn(
