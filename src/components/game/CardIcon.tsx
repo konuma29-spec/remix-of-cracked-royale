@@ -3,6 +3,7 @@ import { CardDefinition } from '@/types/game';
 const CARD_IMAGES: Record<string, string> = {
   'knight': '/knight.png',
   'archers': '/archers.png',
+  'goblins': '/goblins.png',
 };
 
 export function hasCardImage(id: string): boolean {
