@@ -428,9 +428,21 @@ export function useGameState(
   isHost: boolean = true, // For multiplayer - is this player the host (runs authoritative simulation)
   isBossBattle: boolean = false,
 ) {
+  // Auto-convert top 2 cards to evolution versions if unlocked
+  const deckWithAutoEvolutions = playerDeckIds.map((cardId, index) => {
+    if (index < 2) {
+      // Only apply to first 2 slots
+      const baseCardId = cardId.replace('evo-', '');
+      if (unlockedEvolutions.includes(baseCardId) && hasEvolution(baseCardId)) {
+        return `evo-${baseCardId}`;
+      }
+    }
+    return cardId;
+  });
+
   const [gameState, setGameState] = useState<GameState>(() =>
     createInitialState(
-      playerDeckIds,
+      deckWithAutoEvolutions,
       towerLevels,
       isMultiplayer,
       opponentLevel,
@@ -3387,12 +3399,12 @@ export function useGameState(
   }, [spawnUnit, addSpawnEffect, addDamageNumber, trackCardDamage]);
 
   const resetGame = useCallback(() => {
-    setGameState(createInitialState(playerDeckIds));
+    setGameState(createInitialState(deckWithAutoEvolutions));
     setProjectiles([]);
     setSpawnEffects([]);
     setDamageNumbers([]);
     aiLastPlayTime.current = 0;
-  }, [playerDeckIds]);
+  }, [deckWithAutoEvolutions]);
 
   // Manually activate a champion ability
   const activateChampionAbility = useCallback(
