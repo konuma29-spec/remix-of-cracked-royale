@@ -99,6 +99,27 @@ export function DeckBuilder({
     setSelectedDeck(slot?.cardIds || []);
   }, [editingDeckId, deckSlots]);
 
+  // Auto-convert cards in slots 0-1 to evolution versions if unlocked
+  useEffect(() => {
+    const updated = [...selectedDeck];
+    let hasChanges = false;
+
+    for (let i = 0; i < 2 && i < updated.length; i++) {
+      const cardId = updated[i];
+      if (cardId && cardId !== '' && !cardId.startsWith('evo-')) {
+        const baseCardId = cardId.replace('evo-', '');
+        if (unlockedEvolutions.includes(baseCardId) && hasEvolution(baseCardId)) {
+          updated[i] = `evo-${baseCardId}`;
+          hasChanges = true;
+        }
+      }
+    }
+
+    if (hasChanges) {
+      setSelectedDeck(updated);
+    }
+  }, [unlockedEvolutions]);
+
   const ownedCards = allCards.filter(c => ownedCardIds.includes(c.id));
   
   // Filter cards based on search query
