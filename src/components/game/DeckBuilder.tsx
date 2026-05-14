@@ -318,6 +318,7 @@ export function DeckBuilder({
         <div className="grid grid-cols-4 gap-2 min-h-[200px]">
           {[...Array(8)].map((_, idx) => {
             const card = deckCards[idx];
+            const cardId = selectedDeck[idx]; // Get original ID from selectedDeck
             // Only slots 0 and 1 are evolution slots
             const isEvoSlot = idx < 2;
             const isDragging = draggedIndex === idx;
@@ -353,8 +354,10 @@ export function DeckBuilder({
                           card={displayCard} 
                           size="small"
                           onClick={() => {
-                            // Remove the card (either normal or evo version)
-                            setSelectedDeck(prev => prev.filter(id => id !== card.id));
+                            // Remove the card using original ID from selectedDeck
+                            if (cardId) {
+                              setSelectedDeck(prev => prev.filter(id => id !== cardId));
+                            }
                           }}
                           level={getCardLevel(cardCopies[card.id.replace('evo-', '')] || 0)}
                           showLevel={true}
@@ -362,7 +365,12 @@ export function DeckBuilder({
                       );
                     })()}
                     <button
-                      onClick={() => setSelectedDeck(prev => prev.filter(id => id !== card.id))}
+                      onClick={() => {
+                        // Remove the card using original ID from selectedDeck
+                        if (cardId) {
+                          setSelectedDeck(prev => prev.filter(id => id !== cardId));
+                        }
+                      }}
                       className="absolute -top-1 -right-1 w-4 h-4 bg-destructive rounded-full flex items-center justify-center hover:scale-110 transition-transform z-20"
                     >
                       <X className="w-3 h-3 text-white" />
