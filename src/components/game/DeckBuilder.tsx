@@ -208,11 +208,9 @@ export function DeckBuilder({
       return;
     }
 
-    // Reorder the deck
+    // Swap the cards instead of shifting
     const newDeck = [...selectedDeck];
-    const draggedCard = newDeck[draggedIndex];
-    newDeck.splice(draggedIndex, 1);
-    newDeck.splice(targetIndex, 0, draggedCard);
+    [newDeck[draggedIndex], newDeck[targetIndex]] = [newDeck[targetIndex], newDeck[draggedIndex]];
     setSelectedDeck(newDeck);
     setDraggedIndex(null);
   };
