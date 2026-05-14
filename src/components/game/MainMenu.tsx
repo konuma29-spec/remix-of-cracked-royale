@@ -17,6 +17,7 @@ import { getBannerById } from "@/data/banners";
 import { getCurrentArena, ARENAS } from "@/data/arenas";
 import { getCardById } from "@/data/cards";
 import { ChestIcon } from "./ChestIcon";
+import { CardIcon } from "./CardIcon";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -71,8 +72,8 @@ export function MainMenu({
   const activeDeck = progress.deckSlots.find(
     (s) => s.id === progress.activeDeckId,
   );
-  const topRightCardId = activeDeck?.cardIds[3];
-  const topRightCard = topRightCardId ? getCardById(topRightCardId) : undefined;
+  const topLeftCardId = activeDeck?.cardIds[0];
+  const topLeftCard = topLeftCardId ? getCardById(topLeftCardId.replace('evo-', '')) : undefined;
   const playerLevel = Math.min(14, Math.floor(progress.wins / 5) + 1);
   const trophies = progress.wins * 30;
   const currentBanner = getBannerById(progress.bannerId);
@@ -397,10 +398,12 @@ export function MainMenu({
             className="h-12 w-14 rounded-xl bg-gradient-to-b from-blue-500 via-blue-600 to-blue-700 border-b-4 border-blue-900 shadow-lg flex items-center justify-center transform hover:scale-[1.05] transition-all overflow-hidden"
             aria-label="Battle Decks"
           >
-            {topRightCard ? (
-              <span className="text-3xl drop-shadow-md">
-                {topRightCard.emoji}
-              </span>
+            {topLeftCard ? (
+              <CardIcon 
+                card={topLeftCard} 
+                imageClassName="w-10 h-10 object-contain" 
+                emojiClassName="text-2xl"
+              />
             ) : (
               <LayoutGrid className="w-6 h-6 text-white" />
             )}
