@@ -86,6 +86,13 @@ export function useProgression() {
           });
           parsed.__unlockedAllForTest = true;
         }
+
+        // TEST MODE: unlock every evolution
+        if (!parsed.__unlockedAllEvosForTest) {
+          const evoIds = getEvolvableCardIds();
+          parsed.unlockedEvolutions = [...new Set([...(parsed.unlockedEvolutions || []), ...evoIds])];
+          parsed.__unlockedAllEvosForTest = true;
+        }
         
         // Migration: add deck slots if missing
         if (!parsed.deckSlots) {
