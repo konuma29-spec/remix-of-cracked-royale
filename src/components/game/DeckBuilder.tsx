@@ -319,12 +319,7 @@ export function DeckBuilder({
                       }
                       return null;
                     })()}
-                    <div className="mt-1 text-center w-full">
-                      <div className="text-[8px] text-muted-foreground flex justify-center gap-1">
-                        <span>❤️{Math.floor(card.health * getLevelMultiplier(getCardLevel(cardCopies[card.id.replace('evo-', '')] || 0)))}</span>
-                        <span>⚔️{Math.floor(card.damage * getLevelMultiplier(getCardLevel(cardCopies[card.id.replace('evo-', '')] || 0)))}</span>
-                      </div>
-                    </div>
+
                   </div>
                 ) : (
                   <span className="text-muted-foreground text-2xl">+</span>
