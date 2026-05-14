@@ -1,4 +1,5 @@
 import { PlayerProgress } from "@/types/game";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Swords,
@@ -72,8 +73,11 @@ export function MainMenu({
   const activeDeck = progress.deckSlots.find(
     (s) => s.id === progress.activeDeckId,
   );
-  const topLeftCardId = activeDeck?.cardIds[0];
-  const topLeftCard = topLeftCardId ? (() => {
+  
+  const topLeftCard = useMemo(() => {
+    const topLeftCardId = activeDeck?.cardIds[0];
+    if (!topLeftCardId) return undefined;
+    
     const baseCardId = topLeftCardId.replace('evo-', '');
     const baseCard = getCardById(baseCardId);
     if (!baseCard) return undefined;
@@ -87,7 +91,7 @@ export function MainMenu({
       };
     }
     return baseCard;
-  })() : undefined;
+  }, [activeDeck?.cardIds[0]]);
   const playerLevel = Math.min(14, Math.floor(progress.wins / 5) + 1);
   const trophies = progress.wins * 30;
   const currentBanner = getBannerById(progress.bannerId);
