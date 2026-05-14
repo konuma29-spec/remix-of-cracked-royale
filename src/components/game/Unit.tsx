@@ -2,6 +2,7 @@ import { Unit as UnitType } from '@/types/game';
 import { getCardById, SIZE_SCALE } from '@/data/cards';
 import { cn } from '@/lib/utils';
 import { memo } from 'react';
+import { CardIcon } from './CardIcon';
 
 interface UnitProps {
   unit: UnitType;
@@ -139,11 +140,7 @@ export const Unit = memo(function Unit({ unit }: UnitProps) {
           )} />
         )}
         
-        {card.id === 'knight' ? (
-          <img src="/knight.png" alt="Knight" className="w-full h-full object-contain drop-shadow-lg" />
-        ) : (
-          <span className="drop-shadow-lg">{card.emoji}</span>
-        )}
+        <CardIcon card={card} className={card.id === 'knight' ? 'w-full h-full object-contain drop-shadow-lg' : 'drop-shadow-lg'} />
 
         {/* Attack flash */}
         {unit.state === 'attacking' && !isOnCooldown && (

@@ -1,5 +1,6 @@
 import { CardDefinition } from '@/types/game';
 import { cn } from '@/lib/utils';
+import { CardIcon } from './CardIcon';
 
 interface GameCardProps {
   card: CardDefinition;
@@ -78,7 +79,7 @@ export function GameCard({
           size === 'tiny' ? 'text-lg' : size === 'small' ? 'text-xl' : size === 'medium' ? 'text-2xl' : 'text-4xl',
           isSelected && 'animate-bounce'
         )}>
-          {card.emoji}
+          <CardIcon card={card} />
         </span>
       </div>
       

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Sparkles, Check, Lock, X, Swords, Heart, Droplets } from 'lucide-react';
+import { CardIcon } from './CardIcon';
 import { cn } from '@/lib/utils';
 import { allCards } from '@/data/cards';
 import { evolutions, EVOLUTION_SHARDS_REQUIRED, getEvolution } from '@/data/evolutions';
@@ -254,7 +255,7 @@ export function EvolutionShardsModal({
                 <X className="w-5 h-5" />
               </button>
               <div className="flex flex-col items-center gap-2 mb-4">
-                <span className="text-5xl">{detailCard.emoji}</span>
+                <CardIcon card={detailCard} className="text-5xl" />
                 <h3 className="text-lg font-bold text-foreground">{detailCard.name}</h3>
                 <span className={cn('text-xs font-semibold capitalize px-2 py-0.5 rounded-full text-white', rarityConfig[detailCard.rarity]?.bgColor || 'bg-muted')}>
                   {detailCard.rarity}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ShopState } from '@/types/game';
 import { allCards } from '@/data/cards';
+import { CardIcon } from './CardIcon';
 import { cn } from '@/lib/utils';
 import { Clock, Gift, Coins, ChevronRight, Check } from 'lucide-react';
 
@@ -125,7 +126,7 @@ export function ShopScreen({
                     RARITY_COLORS[card.rarity],
                     RARITY_BORDER[card.rarity]
                   )}>
-                    {card.emoji}
+                    <CardIcon card={card} />
                   </div>
                   {!isOwned && (
                     <div className="absolute -top-1 -right-1 bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">
@@ -191,7 +192,7 @@ export function ShopScreen({
                     {item.isPurchased ? (
                       <Check className="w-8 h-8 text-white" />
                     ) : (
-                      card.emoji
+                      <CardIcon card={card} />
                     )}
                   </div>
                   {!isOwned && !item.isPurchased && (

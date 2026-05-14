@@ -19,6 +19,7 @@ import { ProjectileComponent, SpawnEffectComponent } from "./Projectile";
 import { cn } from "@/lib/utils";
 import { getCardById } from "@/data/cards";
 import { Arena as ArenaType } from "@/data/arenas";
+import { CardIcon } from "./CardIcon";
 interface ArenaProps {
   gameState: GameState;
   projectiles: Projectile[];
@@ -693,7 +694,7 @@ export function Arena({
               <span className="text-[9px] font-bold text-white leading-tight bg-black/40 rounded-sm px-0.5">
                 {selectedCard.elixirCost}💧
               </span>
-              <span className="text-xl leading-none">{selectedCard.emoji}</span>
+              <CardIcon card={selectedCard} className="text-xl leading-none" />
               <span className="text-[6px] font-bold text-white/90 truncate w-full text-center leading-tight">
                 {selectedCard.name.split(" ")[0]}
               </span>

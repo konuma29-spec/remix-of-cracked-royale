@@ -3,6 +3,7 @@ import { CardDefinition } from '@/types/game';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { GameCard } from './GameCard';
+import { CardIcon } from './CardIcon';
 import { getCardLevel, getLevelProgress, getCopiesForNextLevel, MAX_LEVEL } from '@/lib/cardLevels';
 import { getWildCard, WildCardRarity } from '@/data/wildCards';
 import { cn } from '@/lib/utils';
@@ -83,7 +84,7 @@ export function WildCardUpgradeModal({
       <DialogContent className="sm:max-w-md bg-card border-border">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <span className="text-2xl">{card.emoji}</span>
+            <CardIcon card={card} className="text-2xl" />
             <span>{card.name}</span>
           </DialogTitle>
           <DialogDescription>

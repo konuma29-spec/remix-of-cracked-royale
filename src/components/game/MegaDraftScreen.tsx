@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { allCards } from "@/data/cards";
 import { CardDefinition } from "@/types/game";
+import { CardIcon } from "./CardIcon";
 import { cn } from "@/lib/utils";
 
 interface MegaDraftScreenProps {
@@ -419,7 +420,7 @@ export function MegaDraftScreen({
                   )}
                 >
                   {card ? (
-                    card.emoji
+                    <CardIcon card={card} />
                   ) : (
                     <span className="text-gray-600 text-xs">?</span>
                   )}
@@ -429,7 +430,7 @@ export function MegaDraftScreen({
           </div>
         </div>
 
-        {/* AI picks */}
+        {/* AI picks */
         <div className="flex-1">
           <p className="text-red-300 text-[10px] font-bold mb-1 uppercase tracking-wide text-right">
             Opponent ({aiPicks.length}/8)
@@ -449,7 +450,7 @@ export function MegaDraftScreen({
                   )}
                 >
                   {card ? (
-                    card.emoji
+                    <CardIcon card={card} />
                   ) : (
                     <span className="text-gray-600 text-xs">?</span>
                   )}
@@ -501,9 +502,7 @@ export function MegaDraftScreen({
                                 : "bg-[#152238] border-gray-700/40 cursor-not-allowed opacity-70",
                       )}
                     >
-                      <span className="text-2xl leading-none mb-1">
-                        {card.emoji}
-                      </span>
+                      <CardIcon card={card} className="text-2xl leading-none mb-1" />
                       <span className="text-[9px] text-gray-200 font-semibold w-full text-center leading-tight px-0.5 break-words hyphens-auto">
                         {card.name}
                       </span>

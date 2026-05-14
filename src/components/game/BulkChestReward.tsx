@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Gift, Coins, Sparkles, Star } from 'lucide-react';
 import { ChestReward as ChestRewardType } from '@/types/game';
 import { allCards } from '@/data/cards';
+import { CardIcon } from './CardIcon';
 import { cn } from '@/lib/utils';
 
 interface BulkChestRewardProps {
@@ -130,7 +131,7 @@ export function BulkChestReward({ chestCount, rewards, onClose }: BulkChestRewar
                         data.isNew ? "border-green-400" : "border-gray-600"
                       )}
                     >
-                      <span className="text-2xl">{card.emoji}</span>
+                      <CardIcon card={card} className="text-2xl" />
                       <span className="absolute bottom-0.5 right-0.5 text-xs font-bold text-white bg-black/60 px-1 rounded">
                         x{data.count}
                       </span>

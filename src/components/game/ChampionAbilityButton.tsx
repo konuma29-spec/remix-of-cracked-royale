@@ -1,6 +1,7 @@
 import { memo, useMemo } from 'react';
 import { Unit } from '@/types/game';
 import { getChampionAbility } from '@/data/championAbilities';
+import { CardIcon } from './CardIcon';
 import { getCardById } from '@/data/cards';
 import { cn } from '@/lib/utils';
 
@@ -145,7 +146,7 @@ export const ChampionAbilityButton = memo(function ChampionAbilityButton({
       
       {/* Champion card emoji indicator */}
       <div className="absolute -bottom-1 -left-1 w-5 h-5 rounded-full bg-card border border-border flex items-center justify-center text-[10px] z-10">
-        {card.emoji}
+        <CardIcon card={card} />
       </div>
     </div>
   );

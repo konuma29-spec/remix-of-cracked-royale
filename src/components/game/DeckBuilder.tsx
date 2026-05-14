@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { CardDefinition, DeckSlot } from '@/types/game';
 import { allCards } from '@/data/cards';
 import { GameCard } from './GameCard';
+import { CardIcon } from './CardIcon';
 import { TowerTroopSelector } from './TowerTroopSelector';
 import { WildCardUpgradeModal } from './WildCardUpgradeModal';
 import { CardEvolutionSelector } from './CardEvolutionSelector';
@@ -476,7 +477,7 @@ export function DeckBuilder({
           >
             <div className="bg-card border-2 border-primary/50 rounded-xl p-3 shadow-2xl min-w-64 max-w-sm">
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-2xl">{selectedCard.emoji}</span>
+                <CardIcon card={selectedCard} className="text-2xl" />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <h3 className="font-bold">{selectedCard.name}</h3>

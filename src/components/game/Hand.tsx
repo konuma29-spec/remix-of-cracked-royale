@@ -2,6 +2,7 @@ import { CardDefinition } from '@/types/game';
 import { GameCard } from './GameCard';
 import { cn } from '@/lib/utils';
 import { getEvolution, hasEvolution } from '@/data/evolutions';
+import { CardIcon } from './CardIcon';
 
 interface HandProps {
   cards: CardDefinition[];
@@ -25,7 +26,7 @@ export function Hand({ cards, elixir, selectedIndex, onCardSelect, nextCard, car
             "w-6 h-7 rounded border border-border/50 bg-card/50 flex items-center justify-center",
             "opacity-70 scale-90"
           )}>
-            <span className="text-xs">{nextCard.emoji}</span>
+            <CardIcon card={nextCard} className="text-xs" />
           </div>
         </div>
       )}

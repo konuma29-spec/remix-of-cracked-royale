@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { allCards } from '@/data/cards';
+import { CardIcon } from './CardIcon';
 import { wildCards, WildCardRarity } from '@/data/wildCards';
 import { evolutions, getEvolution, EVOLUTION_SHARDS_REQUIRED } from '@/data/evolutions';
 import { GameCard } from './GameCard';
@@ -309,7 +310,7 @@ export function CardCollection({
 
               {/* Header */}
               <div className="flex flex-col items-center gap-2 mb-4">
-                <span className="text-5xl">{selectedCard.emoji}</span>
+                <CardIcon card={selectedCard} className="text-5xl" />
                 <h3 className="text-lg font-bold text-foreground">{selectedCard.name}</h3>
                 <span className={cn('text-xs font-semibold capitalize px-2 py-0.5 rounded-full', rarityConfig[selectedCard.rarity as Rarity]?.bgColor || 'bg-muted', 'text-white')}>
                   {selectedCard.rarity}
