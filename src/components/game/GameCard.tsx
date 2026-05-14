@@ -76,7 +76,11 @@ export function GameCard({
       >
         <CardIcon
           card={card}
-          imageClassName={cn('w-full h-full object-contain', isSelected && 'animate-bounce')}
+          imageClassName={cn(
+            'object-contain',
+            size === 'tiny' ? 'w-6 h-6' : size === 'small' ? 'w-8 h-8' : size === 'medium' ? 'w-10 h-10' : 'w-16 h-16',
+            isSelected && 'animate-bounce'
+          )}
           emojiClassName={cn(
             'transition-transform duration-200',
             size === 'tiny' ? 'text-lg' : size === 'small' ? 'text-xl' : size === 'medium' ? 'text-2xl' : 'text-4xl',
