@@ -3,7 +3,7 @@ import { PlayerProgress, ChestReward, DeckSlot } from '@/types/game';
 import { allCards, starterCardIds } from '@/data/cards';
 import { starterBannerIds, getRandomBanner } from '@/data/banners';
 import { getCardLevel } from '@/lib/cardLevels';
-import { EVOLUTION_SHARDS_REQUIRED, hasEvolution } from '@/data/evolutions';
+import { EVOLUTION_SHARDS_REQUIRED, hasEvolution, getEvolvableCardIds } from '@/data/evolutions';
 import { TOWER_TROOPS, TowerTroop } from '@/data/towerTroops';
 
 // Extended progress type with tower troop support
