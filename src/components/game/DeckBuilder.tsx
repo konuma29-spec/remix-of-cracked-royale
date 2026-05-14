@@ -148,6 +148,10 @@ export function DeckBuilder({
       // Remove whichever version is in deck
       setSelectedDeck(prev => prev.filter(id => id !== baseCardId && id !== `evo-${baseCardId}`));
     } else if (selectedDeck.length < 8) {
+      // If trying to add evolution card, only allow in first 2 slots
+      if (useEvolution && selectedDeck.length >= 2) {
+        return; // Block evolution card from being added to slot 3+
+      }
       setSelectedDeck(prev => [...prev, finalCardId]);
     }
     // If deck is full and card not in deck, do nothing (block add)
@@ -270,39 +274,50 @@ export function DeckBuilder({
         <div className="grid grid-cols-4 gap-2 min-h-[200px]">
           {[...Array(8)].map((_, idx) => {
             const card = deckCards[idx];
+            // Only slots 0 and 1 are evolution slots
+            const isEvoSlot = idx < 2;
             return (
               <div 
                 key={idx}
                 className={cn(
-                  'rounded-lg border-2 border-dashed border-muted flex flex-col items-center justify-center p-1',
+                  'rounded-lg border-2 flex flex-col items-center justify-center p-1',
+                  isEvoSlot ? 'border-purple-400 shadow-lg shadow-purple-500/50' : 'border-dashed border-muted',
                   !card && 'bg-muted/20 aspect-[3/4]'
                 )}
               >
                 {card ? (
                   <div className="relative flex flex-col items-center">
-                    {/* Evolution glow effect */}
-                    {(card as CardDefinition & { isEvolved?: boolean }).isEvolved && (
-                      <div className="absolute inset-0 rounded-lg bg-gradient-to-t from-amber-500/20 to-transparent pointer-events-none z-0" />
+                    {/* Evolution glow effect - only on evo slots */}
+                    {isEvoSlot && (card as CardDefinition & { isEvolved?: boolean }).isEvolved && (
+                      <div className="absolute inset-0 rounded-lg bg-gradient-to-t from-purple-600/40 to-transparent pointer-events-none z-0" />
                     )}
-                    <GameCard 
-                      card={card} 
-                      size="small"
-                      onClick={() => {
-                        // Remove the card (either normal or evo version)
-                        setSelectedDeck(prev => prev.filter(id => id !== card.id));
-                      }}
-                      level={getCardLevel(cardCopies[card.id.replace('evo-', '')] || 0)}
-                      showLevel={true}
-                    />
+                    {/* Strip evo prefix from cards in non-evo slots */}
+                    {(() => {
+                      const displayCard = !isEvoSlot && (card as CardDefinition & { isEvolved?: boolean }).isEvolved
+                        ? { ...card, id: card.id.replace('evo-', ''), name: card.name.replace('Evo ', ''), isEvolved: false }
+                        : card;
+                      return (
+                        <GameCard 
+                          card={displayCard} 
+                          size="small"
+                          onClick={() => {
+                            // Remove the card (either normal or evo version)
+                            setSelectedDeck(prev => prev.filter(id => id !== card.id));
+                          }}
+                          level={getCardLevel(cardCopies[card.id.replace('evo-', '')] || 0)}
+                          showLevel={true}
+                        />
+                      );
+                    })()}
                     <button
                       onClick={() => setSelectedDeck(prev => prev.filter(id => id !== card.id))}
                       className="absolute -top-1 -right-1 w-4 h-4 bg-destructive rounded-full flex items-center justify-center hover:scale-110 transition-transform z-20"
                     >
                       <X className="w-3 h-3 text-white" />
                     </button>
-                    {/* Evolution indicator */}
-                    {(card as CardDefinition & { isEvolved?: boolean }).isEvolved && (
-                      <div className="absolute -top-1 -left-1 w-4 h-4 bg-gradient-to-r from-amber-400 to-yellow-500 rounded-full flex items-center justify-center z-20" title="Evolved">
+                    {/* Evolution indicator - only show on evo slots */}
+                    {isEvoSlot && (card as CardDefinition & { isEvolved?: boolean }).isEvolved && (
+                      <div className="absolute -top-1 -left-1 w-4 h-4 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full flex items-center justify-center z-20" title="Evolved">
                         <span className="text-[8px]">✨</span>
                       </div>
                     )}
