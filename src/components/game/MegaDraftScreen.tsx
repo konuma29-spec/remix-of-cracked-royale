@@ -430,7 +430,7 @@ export function MegaDraftScreen({
           </div>
         </div>
 
-        {/* AI picks */
+        {/* AI picks */}
         <div className="flex-1">
           <p className="text-red-300 text-[10px] font-bold mb-1 uppercase tracking-wide text-right">
             Opponent ({aiPicks.length}/8)
