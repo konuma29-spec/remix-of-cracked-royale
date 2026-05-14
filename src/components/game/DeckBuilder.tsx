@@ -234,8 +234,9 @@ export function DeckBuilder({
     setDraggedIndex(null);
   };
 
-  const avgElixir = deckCards.length > 0 
-    ? (deckCards.reduce((sum, c) => sum + c.elixirCost, 0) / deckCards.length).toFixed(1)
+  const nonNullDeckCards = deckCards.filter((c): c is CardDefinition & { isEvolved?: boolean } => c !== null);
+  const avgElixir = nonNullDeckCards.length > 0
+    ? (nonNullDeckCards.reduce((sum, c) => sum + c.elixirCost, 0) / nonNullDeckCards.length).toFixed(1)
     : '0.0';
 
   const isActiveDeck = activeDeckId === editingDeckId;
