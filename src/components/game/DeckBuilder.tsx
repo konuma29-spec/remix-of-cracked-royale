@@ -70,6 +70,7 @@ export function DeckBuilder({
   const [upgradeModalCard, setUpgradeModalCard] = useState<CardDefinition | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [evolutionSelectorCard, setEvolutionSelectorCard] = useState<CardDefinition | null>(null);
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -190,6 +191,36 @@ export function DeckBuilder({
     }
   };
 
+  const handleDragStart = (e: React.DragEvent, index: number) => {
+    setDraggedIndex(index);
+    e.dataTransfer.effectAllowed = 'move';
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e: React.DragEvent, targetIndex: number) => {
+    e.preventDefault();
+    if (draggedIndex === null || draggedIndex === targetIndex) {
+      setDraggedIndex(null);
+      return;
+    }
+
+    // Reorder the deck
+    const newDeck = [...selectedDeck];
+    const draggedCard = newDeck[draggedIndex];
+    newDeck.splice(draggedIndex, 1);
+    newDeck.splice(targetIndex, 0, draggedCard);
+    setSelectedDeck(newDeck);
+    setDraggedIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+
   const avgElixir = deckCards.length > 0 
     ? (deckCards.reduce((sum, c) => sum + c.elixirCost, 0) / deckCards.length).toFixed(1)
     : '0.0';
@@ -276,13 +307,21 @@ export function DeckBuilder({
             const card = deckCards[idx];
             // Only slots 0 and 1 are evolution slots
             const isEvoSlot = idx < 2;
+            const isDragging = draggedIndex === idx;
             return (
               <div 
                 key={idx}
+                draggable={!!card}
+                onDragStart={(e) => handleDragStart(e, idx)}
+                onDragOver={handleDragOver}
+                onDrop={(e) => handleDrop(e, idx)}
+                onDragEnd={handleDragEnd}
                 className={cn(
-                  'rounded-lg border-2 flex flex-col items-center justify-center p-1',
+                  'rounded-lg border-2 flex flex-col items-center justify-center p-1 cursor-move transition-all',
                   isEvoSlot ? 'border-purple-400 shadow-lg shadow-purple-500/50' : 'border-dashed border-muted',
-                  !card && 'bg-muted/20 aspect-[3/4]'
+                  !card && 'bg-muted/20 aspect-[3/4] cursor-default',
+                  isDragging && 'opacity-40',
+                  draggedIndex !== null && draggedIndex !== idx && !isDragging && 'opacity-75'
                 )}
               >
                 {card ? (
