@@ -37,11 +37,11 @@ export function Hand({ cards, elixir, selectedIndex, onCardSelect, nextCard, car
             
             return (
               <div key="evo-0" className="flex flex-col items-center">
-                <div className="w-10 h-12 rounded-md border border-purple-500/50 bg-purple-900/30 flex items-center justify-center relative overflow-hidden">
+                <div className="w-10 h-12 rounded-md border-2 border-purple-400 bg-purple-900/40 flex items-center justify-center relative overflow-hidden shadow-lg shadow-purple-500/50">
                   <GameCard card={displayCard as CardDefinition} size="tiny" />
-                  <div className="absolute inset-0 rounded-md bg-gradient-to-t from-purple-500/20 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 rounded-md bg-gradient-to-t from-purple-500/30 to-transparent pointer-events-none" />
                 </div>
-                <span className="text-[6px] text-purple-300 mt-0.5 font-medium">EVO</span>
+                <span className="text-[6px] text-purple-300 mt-0.5 font-medium font-bold">EVO</span>
               </div>
             );
           })()}
@@ -62,11 +62,11 @@ export function Hand({ cards, elixir, selectedIndex, onCardSelect, nextCard, car
             
             return (
               <div key="evo-1" className="flex flex-col items-center">
-                <div className="w-10 h-12 rounded-md border border-purple-500/50 bg-purple-900/30 flex items-center justify-center relative overflow-hidden">
+                <div className="w-10 h-12 rounded-md border-2 border-purple-400 bg-purple-900/40 flex items-center justify-center relative overflow-hidden shadow-lg shadow-purple-500/50">
                   <GameCard card={displayCard as CardDefinition} size="tiny" />
-                  <div className="absolute inset-0 rounded-md bg-gradient-to-t from-purple-500/20 to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 rounded-md bg-gradient-to-t from-purple-500/30 to-transparent pointer-events-none" />
                 </div>
-                <span className="text-[6px] text-purple-300 mt-0.5 font-medium">EVO</span>
+                <span className="text-[6px] text-purple-300 mt-0.5 font-medium font-bold">EVO</span>
               </div>
             );
           })()}
