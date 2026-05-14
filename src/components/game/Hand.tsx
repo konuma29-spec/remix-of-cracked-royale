@@ -17,7 +17,64 @@ interface HandProps {
 
 export function Hand({ cards, elixir, selectedIndex, onCardSelect, nextCard, cardLevels, cardPlayCounts = {}, unlockedEvolutions = [] }: HandProps) {
   return (
-    <div className="flex gap-0.5 justify-center items-end">
+    <div className="flex flex-col gap-1 w-full">
+      {/* Evolution slots - top left and second top left */}
+      {cards.length >= 2 && (
+        <div className="flex gap-1 justify-center px-1">
+          {/* Evolution slot for first card */}
+          {cards[0] && (() => {
+            const baseCardId = cards[0].id.replace('evo-', '');
+            const hasEvo = hasEvolution(baseCardId) && unlockedEvolutions.includes(baseCardId);
+            if (!hasEvo) return null;
+            
+            const evolution = getEvolution(baseCardId);
+            const displayCard = {
+              ...cards[0],
+              id: `evo-${baseCardId}`,
+              name: `Evo ${cards[0].name}`,
+              emoji: evolution?.emoji || cards[0].emoji
+            };
+            
+            return (
+              <div key="evo-0" className="flex flex-col items-center">
+                <div className="w-10 h-12 rounded-md border border-purple-500/50 bg-purple-900/30 flex items-center justify-center relative overflow-hidden">
+                  <GameCard card={displayCard as CardDefinition} size="tiny" />
+                  <div className="absolute inset-0 rounded-md bg-gradient-to-t from-purple-500/20 to-transparent pointer-events-none" />
+                </div>
+                <span className="text-[6px] text-purple-300 mt-0.5 font-medium">EVO</span>
+              </div>
+            );
+          })()}
+          
+          {/* Evolution slot for second card */}
+          {cards[1] && (() => {
+            const baseCardId = cards[1].id.replace('evo-', '');
+            const hasEvo = hasEvolution(baseCardId) && unlockedEvolutions.includes(baseCardId);
+            if (!hasEvo) return null;
+            
+            const evolution = getEvolution(baseCardId);
+            const displayCard = {
+              ...cards[1],
+              id: `evo-${baseCardId}`,
+              name: `Evo ${cards[1].name}`,
+              emoji: evolution?.emoji || cards[1].emoji
+            };
+            
+            return (
+              <div key="evo-1" className="flex flex-col items-center">
+                <div className="w-10 h-12 rounded-md border border-purple-500/50 bg-purple-900/30 flex items-center justify-center relative overflow-hidden">
+                  <GameCard card={displayCard as CardDefinition} size="tiny" />
+                  <div className="absolute inset-0 rounded-md bg-gradient-to-t from-purple-500/20 to-transparent pointer-events-none" />
+                </div>
+                <span className="text-[6px] text-purple-300 mt-0.5 font-medium">EVO</span>
+              </div>
+            );
+          })()}
+        </div>
+      )}
+      
+      {/* Hand cards */}
+      <div className="flex gap-0.5 justify-center items-end">
       {/* Next card preview */}
       {nextCard && (
         <div className="flex flex-col items-center mr-0.5">
@@ -96,6 +153,7 @@ export function Hand({ cards, elixir, selectedIndex, onCardSelect, nextCard, car
           </div>
         );
       })}
+      </div>
     </div>
   );
 }

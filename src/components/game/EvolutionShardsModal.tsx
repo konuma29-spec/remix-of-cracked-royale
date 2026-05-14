@@ -125,6 +125,14 @@ export function EvolutionShardsModal({
             const isEvolved = unlockedEvolutions.includes(card.id);
             const evolution = getEvolution(card.id);
             const isSelected = selectedCardId === card.id;
+            
+            // Show evolved card when unlocked
+            const displayCard = isEvolved && evolution ? {
+              ...card,
+              id: `evo-${card.id}`,
+              name: `Evo ${card.name}`,
+              emoji: evolution.emoji
+            } : card;
 
             return (
               <button
@@ -144,14 +152,10 @@ export function EvolutionShardsModal({
                 )}
               >
                 <div className="relative w-full aspect-[3/4] flex items-center justify-center">
-                  <GameCard card={card} size="small" canAfford={isOwned} />
+                  <GameCard card={displayCard as CardDefinition} size="small" canAfford={isOwned} />
                   
                   {isEvolved && (
-                    <div className="absolute inset-0 bg-purple-900/60 rounded flex items-center justify-center">
-                      <div className="w-6 h-6 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
-                        <Check className="w-4 h-4 text-white" />
-                      </div>
-                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-purple-600/40 to-transparent rounded pointer-events-none" />
                   )}
 
                   {!isOwned && (
@@ -165,7 +169,7 @@ export function EvolutionShardsModal({
                   "text-[9px] font-medium leading-tight text-center line-clamp-1 w-full mt-1",
                   isEvolved ? "text-purple-300" : isOwned ? "text-foreground/80" : "text-muted-foreground"
                 )}>
-                  {card.name}
+                  {displayCard.name}
                 </span>
 
                 {evolution && (
