@@ -23,7 +23,8 @@ interface CardIconProps {
  * or the emoji fallback for all others.
  */
 export function CardIcon({ card, imageClassName, emojiClassName, className }: CardIconProps) {
-  const imageSrc = CARD_IMAGES[card.id];
+  const baseId = card.id.replace(/^evo-/, '');
+  const imageSrc = CARD_IMAGES[baseId] ?? CARD_IMAGES[card.id];
   if (imageSrc) {
     return (
       <img
