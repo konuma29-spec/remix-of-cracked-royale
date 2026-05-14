@@ -139,7 +139,6 @@ export function DeckBuilder({
   };
 
   const toggleCard = (cardId: string, useEvolution: boolean = false) => {
-    const finalCardId = useEvolution ? `evo-${cardId}` : cardId;
     const baseCardId = cardId.replace('evo-', '');
     
     // Check if any version of this card is in deck
@@ -159,62 +158,34 @@ export function DeckBuilder({
       // Find first empty slot or append if needed
       const filledCount = selectedDeck.filter(id => id && id !== '').length;
       if (filledCount < 8) {
-        // If trying to add evolution card, only allow in first 2 slots
-        if (useEvolution) {
-          const evoSlot0Filled = selectedDeck[0] && selectedDeck[0] !== '';
-          const evoSlot1Filled = selectedDeck[1] && selectedDeck[1] !== '';
-          if (evoSlot0Filled && evoSlot1Filled) {
-            return; // Block evolution card from being added when slots 0-1 are full
-          }
-          // Add to first empty evo slot
-          const firstEmptyEvo = selectedDeck[0] === '' || selectedDeck[0] === undefined ? 0 : 1;
-          if (selectedDeck[firstEmptyEvo] === undefined) {
-            // Pad deck to at least this position
-            while (selectedDeck.length <= firstEmptyEvo) {
-              selectedDeck.push('');
-            }
-          }
-          setSelectedDeck(prev => {
-            const updated = [...prev];
-            updated[firstEmptyEvo] = finalCardId;
-            return updated;
-          });
-        } else {
-          // Add to first empty slot
-          const firstEmptySlot = selectedDeck.indexOf('');
-          if (firstEmptySlot !== -1) {
-            setSelectedDeck(prev => {
-              const updated = [...prev];
-              updated[firstEmptySlot] = finalCardId;
-              return updated;
-            });
-          } else {
-            // No empty slot, append
-            setSelectedDeck(prev => [...prev, finalCardId]);
+        // Find first empty slot
+        const firstEmptySlot = selectedDeck.indexOf('');
+        const targetSlot = firstEmptySlot !== -1 ? firstEmptySlot : selectedDeck.length;
+        
+        // If adding to slot 0 or 1, force evolution form if unlocked
+        let cardToAdd = baseCardId;
+        if (targetSlot < 2) {
+          if (unlockedEvolutions.includes(baseCardId) && hasEvolution(baseCardId)) {
+            cardToAdd = `evo-${baseCardId}`;
           }
         }
+        
+        setSelectedDeck(prev => {
+          const updated = [...prev];
+          if (firstEmptySlot !== -1) {
+            updated[firstEmptySlot] = cardToAdd;
+          } else {
+            updated.push(cardToAdd);
+          }
+          return updated;
+        });
       }
     }
   };
   
-  // Handle card double-click with evolution check
+  // Handle card double-click
   const handleCardDoubleClick = (card: CardDefinition) => {
-    const baseCardId = card.id.replace('evo-', '');
-    const hasUnlockedEvolution = unlockedEvolutions.includes(baseCardId) && hasEvolution(baseCardId);
-    const isInDeck = selectedDeck.includes(card.id) || selectedDeck.includes(`evo-${card.id}`);
-    
-    // If removing from deck, just remove it
-    if (isInDeck) {
-      toggleCard(card.id);
-      return;
-    }
-    
-    // If adding and has unlocked evolution, show selector
-    if (hasUnlockedEvolution && selectedDeck.length < 8) {
-      setEvolutionSelectorCard(card);
-    } else {
-      toggleCard(card.id);
-    }
+    toggleCard(card.id);
   };
 
   const handleSave = () => {
