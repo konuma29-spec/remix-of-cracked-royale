@@ -255,7 +255,7 @@ export function EvolutionShardsModal({
                 <X className="w-5 h-5" />
               </button>
               <div className="flex flex-col items-center gap-2 mb-4">
-                <CardIcon card={detailCard} className="text-5xl" />
+                <CardIcon card={detailCard} imageClassName="w-16 h-16 object-contain" emojiClassName="text-5xl" />
                 <h3 className="text-lg font-bold text-foreground">{detailCard.name}</h3>
                 <span className={cn('text-xs font-semibold capitalize px-2 py-0.5 rounded-full text-white', rarityConfig[detailCard.rarity]?.bgColor || 'bg-muted')}>
                   {detailCard.rarity}

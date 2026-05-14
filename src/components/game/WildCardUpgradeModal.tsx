@@ -84,7 +84,7 @@ export function WildCardUpgradeModal({
       <DialogContent className="sm:max-w-md bg-card border-border">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <CardIcon card={card} className="text-2xl" />
+            <CardIcon card={card} imageClassName="w-8 h-8 object-contain" emojiClassName="text-2xl" />
             <span>{card.name}</span>
           </DialogTitle>
           <DialogDescription>

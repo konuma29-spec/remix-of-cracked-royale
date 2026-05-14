@@ -126,7 +126,7 @@ export function ShopScreen({
                     RARITY_COLORS[card.rarity],
                     RARITY_BORDER[card.rarity]
                   )}>
-                    <CardIcon card={card} />
+                    <CardIcon card={card} imageClassName="w-full h-full object-contain" emojiClassName="text-4xl" />
                   </div>
                   {!isOwned && (
                     <div className="absolute -top-1 -right-1 bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">
@@ -192,7 +192,7 @@ export function ShopScreen({
                     {item.isPurchased ? (
                       <Check className="w-8 h-8 text-white" />
                     ) : (
-                      <CardIcon card={card} />
+                      <CardIcon card={card} imageClassName="w-full h-full object-contain" emojiClassName="text-3xl" />
                     )}
                   </div>
                   {!isOwned && !item.isPurchased && (

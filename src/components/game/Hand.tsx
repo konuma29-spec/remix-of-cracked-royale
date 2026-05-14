@@ -26,7 +26,7 @@ export function Hand({ cards, elixir, selectedIndex, onCardSelect, nextCard, car
             "w-6 h-7 rounded border border-border/50 bg-card/50 flex items-center justify-center",
             "opacity-70 scale-90"
           )}>
-            <CardIcon card={nextCard} className="text-xs" />
+            <CardIcon card={nextCard} imageClassName="w-full h-full object-contain" emojiClassName="text-xs" />
           </div>
         </div>
       )}

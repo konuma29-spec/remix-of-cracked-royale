@@ -694,7 +694,7 @@ export function Arena({
               <span className="text-[9px] font-bold text-white leading-tight bg-black/40 rounded-sm px-0.5">
                 {selectedCard.elixirCost}💧
               </span>
-              <CardIcon card={selectedCard} className="text-xl leading-none" />
+              <CardIcon card={selectedCard} imageClassName="text-xl leading-none w-full h-full object-contain" emojiClassName="text-xl leading-none" />
               <span className="text-[6px] font-bold text-white/90 truncate w-full text-center leading-tight">
                 {selectedCard.name.split(" ")[0]}
               </span>

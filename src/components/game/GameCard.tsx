@@ -74,13 +74,15 @@ export function GameCard({
           background: `linear-gradient(135deg, ${card.color}40, ${card.color}20)`,
         }}
       >
-        <span className={cn(
-          'transition-transform duration-200',
-          size === 'tiny' ? 'text-lg' : size === 'small' ? 'text-xl' : size === 'medium' ? 'text-2xl' : 'text-4xl',
-          isSelected && 'animate-bounce'
-        )}>
-          <CardIcon card={card} />
-        </span>
+        <CardIcon
+          card={card}
+          imageClassName={cn('w-full h-full object-contain', isSelected && 'animate-bounce')}
+          emojiClassName={cn(
+            'transition-transform duration-200',
+            size === 'tiny' ? 'text-lg' : size === 'small' ? 'text-xl' : size === 'medium' ? 'text-2xl' : 'text-4xl',
+            isSelected && 'animate-bounce'
+          )}
+        />
       </div>
       
       {/* Card name - hide on tiny size */}

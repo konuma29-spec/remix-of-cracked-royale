@@ -146,7 +146,7 @@ export const ChampionAbilityButton = memo(function ChampionAbilityButton({
       
       {/* Champion card emoji indicator */}
       <div className="absolute -bottom-1 -left-1 w-5 h-5 rounded-full bg-card border border-border flex items-center justify-center text-[10px] z-10">
-        <CardIcon card={card} />
+        <CardIcon card={card} imageClassName="w-4 h-4 object-contain" emojiClassName="text-[10px]" />
       </div>
     </div>
   );

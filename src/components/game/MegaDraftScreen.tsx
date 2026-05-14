@@ -420,7 +420,7 @@ export function MegaDraftScreen({
                   )}
                 >
                   {card ? (
-                    <CardIcon card={card} />
+                    <CardIcon card={card} imageClassName="w-full h-full object-contain" emojiClassName="text-base" />
                   ) : (
                     <span className="text-gray-600 text-xs">?</span>
                   )}
@@ -450,7 +450,7 @@ export function MegaDraftScreen({
                   )}
                 >
                   {card ? (
-                    <CardIcon card={card} />
+                    <CardIcon card={card} imageClassName="w-full h-full object-contain" emojiClassName="text-base" />
                   ) : (
                     <span className="text-gray-600 text-xs">?</span>
                   )}
@@ -502,7 +502,7 @@ export function MegaDraftScreen({
                                 : "bg-[#152238] border-gray-700/40 cursor-not-allowed opacity-70",
                       )}
                     >
-                      <CardIcon card={card} className="text-2xl leading-none mb-1" />
+                      <CardIcon card={card} imageClassName="w-full h-full object-contain" emojiClassName="text-2xl leading-none mb-1" />
                       <span className="text-[9px] text-gray-200 font-semibold w-full text-center leading-tight px-0.5 break-words hyphens-auto">
                         {card.name}
                       </span>

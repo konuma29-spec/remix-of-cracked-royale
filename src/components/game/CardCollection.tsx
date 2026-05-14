@@ -310,7 +310,7 @@ export function CardCollection({
 
               {/* Header */}
               <div className="flex flex-col items-center gap-2 mb-4">
-                <CardIcon card={selectedCard} className="text-5xl" />
+                <CardIcon card={selectedCard} imageClassName="w-16 h-16 object-contain" emojiClassName="text-5xl" />
                 <h3 className="text-lg font-bold text-foreground">{selectedCard.name}</h3>
                 <span className={cn('text-xs font-semibold capitalize px-2 py-0.5 rounded-full', rarityConfig[selectedCard.rarity as Rarity]?.bgColor || 'bg-muted', 'text-white')}>
                   {selectedCard.rarity}

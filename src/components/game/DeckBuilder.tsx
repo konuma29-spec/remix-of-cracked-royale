@@ -477,7 +477,7 @@ export function DeckBuilder({
           >
             <div className="bg-card border-2 border-primary/50 rounded-xl p-3 shadow-2xl min-w-64 max-w-sm">
               <div className="flex items-center gap-2 mb-2">
-                <CardIcon card={selectedCard} className="text-2xl" />
+                <CardIcon card={selectedCard} imageClassName="w-8 h-8 object-contain" emojiClassName="text-2xl" />
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
                     <h3 className="font-bold">{selectedCard.name}</h3>
