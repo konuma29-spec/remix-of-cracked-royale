@@ -139,7 +139,11 @@ export const Unit = memo(function Unit({ unit }: UnitProps) {
           )} />
         )}
         
-        <span className="drop-shadow-lg">{card.emoji}</span>
+        {card.id === 'knight' ? (
+          <img src="/knight.png" alt="Knight" className="w-full h-full object-contain drop-shadow-lg" />
+        ) : (
+          <span className="drop-shadow-lg">{card.emoji}</span>
+        )}
 
         {/* Attack flash */}
         {unit.state === 'attacking' && !isOnCooldown && (
