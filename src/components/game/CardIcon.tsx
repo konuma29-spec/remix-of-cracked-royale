@@ -14,6 +14,7 @@ const CARD_IMAGES: Record<string, string> = {
   'heal-spirit': '/heal-spirit.png',
   'electro-spirit': '/electro-spirit.png',
   'barbarians': '/barbarians.png',
+  'evo-barbarians': '/evo-barbarians.png',
   'bats': '/bats.png',
   'firecracker': '/firecracker.png',
   'goblin-gang': '/goblin-gang.png',
