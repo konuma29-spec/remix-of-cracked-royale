@@ -73,7 +73,21 @@ export function MainMenu({
     (s) => s.id === progress.activeDeckId,
   );
   const topLeftCardId = activeDeck?.cardIds[0];
-  const topLeftCard = topLeftCardId ? getCardById(topLeftCardId.replace('evo-', '')) : undefined;
+  const topLeftCard = topLeftCardId ? (() => {
+    const baseCardId = topLeftCardId.replace('evo-', '');
+    const baseCard = getCardById(baseCardId);
+    if (!baseCard) return undefined;
+    
+    // If stored with evo- prefix, return card with evo id so CardIcon looks up evo image
+    if (topLeftCardId.startsWith('evo-')) {
+      return {
+        ...baseCard,
+        id: topLeftCardId,
+        name: `Evo ${baseCard.name}`
+      };
+    }
+    return baseCard;
+  })() : undefined;
   const playerLevel = Math.min(14, Math.floor(progress.wins / 5) + 1);
   const trophies = progress.wins * 30;
   const currentBanner = getBannerById(progress.bannerId);
