@@ -76,6 +76,16 @@ export function useProgression() {
         const existingOwned = parsed.ownedCardIds || [];
         const mergedOwned = [...new Set([...starterCardIds, ...existingOwned])];
         parsed.ownedCardIds = mergedOwned;
+
+        // TEST MODE: unlock every card once
+        if (!parsed.__unlockedAllForTest) {
+          parsed.ownedCardIds = allCards.map(c => c.id);
+          parsed.cardCopies = parsed.cardCopies || {};
+          allCards.forEach(c => {
+            if (!parsed.cardCopies[c.id]) parsed.cardCopies[c.id] = 1;
+          });
+          parsed.__unlockedAllForTest = true;
+        }
         
         // Migration: add deck slots if missing
         if (!parsed.deckSlots) {
