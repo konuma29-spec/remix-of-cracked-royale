@@ -112,8 +112,9 @@ export function DeckBuilder({
     );
   }, [ownedCards, searchQuery]);
   
-  // Map deck IDs to cards, handling evo- prefix
-  const deckCards = selectedDeck.map(id => {
+  // Map deck IDs to cards, handling evo- prefix (keep nulls for proper indexing)
+  const deckCards = selectedDeck.concat(Array(8 - selectedDeck.length).fill(null)).map((id, idx) => {
+    if (!id) return null;
     const isEvo = id.startsWith('evo-');
     const baseId = isEvo ? id.replace('evo-', '') : id;
     const baseCard = allCards.find(c => c.id === baseId);
@@ -130,7 +131,7 @@ export function DeckBuilder({
       } as CardDefinition & { isEvolved?: boolean };
     }
     return baseCard;
-  }).filter(Boolean) as (CardDefinition & { isEvolved?: boolean })[];
+  }) as (CardDefinition & { isEvolved?: boolean } | null)[];
 
   // Get balance info for a card
   const getBalanceInfo = (cardId: string): CardBalanceInfo | undefined => {
@@ -192,6 +193,11 @@ export function DeckBuilder({
   };
 
   const handleDragStart = (e: React.DragEvent, index: number) => {
+    // Only allow dragging if there's an actual card at this index
+    if (index >= selectedDeck.length) {
+      e.preventDefault();
+      return;
+    }
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = 'move';
   };
@@ -208,10 +214,19 @@ export function DeckBuilder({
       return;
     }
 
-    // Swap the cards instead of shifting
-    const newDeck = [...selectedDeck];
-    [newDeck[draggedIndex], newDeck[targetIndex]] = [newDeck[targetIndex], newDeck[draggedIndex]];
-    setSelectedDeck(newDeck);
+    // Create 8-slot array for swapping
+    const paddedDeck = [...selectedDeck];
+    while (paddedDeck.length < 8) paddedDeck.push('');
+    
+    // Swap positions
+    [paddedDeck[draggedIndex], paddedDeck[targetIndex]] = [paddedDeck[targetIndex], paddedDeck[draggedIndex]];
+    
+    // Remove empty slots at the end
+    while (paddedDeck.length > 0 && paddedDeck[paddedDeck.length - 1] === '') {
+      paddedDeck.pop();
+    }
+    
+    setSelectedDeck(paddedDeck);
     setDraggedIndex(null);
   };
 
