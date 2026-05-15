@@ -36,8 +36,8 @@ export function Tower({ tower, shouldShowHealthBar = true }: TowerProps) {
 
   const size = tower.type === "king" ? "w-24 h-24" : tower.type === "princess" && tower.owner === "player" ? "w-20 h-20" : tower.type === "princess" ? "w-14 h-14" : "w-16 h-16";
 
-  // For player's king tower, show health above to avoid being covered by UI
-  const showHealthAbove = tower.type === "king" && tower.owner === "player";
+  // For player's king tower and all princess towers, show health above to avoid being covered by UI
+  const showHealthAbove = (tower.type === "king" && tower.owner === "player") || tower.type === "princess";
   
   // For king towers, only show health bar if king has taken damage or shouldShowHealthBar is explicitly true
   const shouldShowKingHealthBar = tower.type === "king" 
