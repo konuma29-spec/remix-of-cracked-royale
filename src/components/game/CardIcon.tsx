@@ -127,7 +127,26 @@ interface CardIconProps {
 export function CardIcon({ card, imageClassName, emojiClassName, className }: CardIconProps) {
   const baseId = card.id.replace(/^evo-/, '');
   const imageSrc = CARD_IMAGES[card.id] ?? CARD_IMAGES[baseId];
+  const isLegendary = (card as any)?.rarity === 'legendary';
+  
   if (imageSrc) {
+    if (isLegendary) {
+      return (
+        <div
+          className={`relative w-full h-full ${imageClassName ?? className ?? ''}`}
+          style={{
+            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+          }}
+        >
+          <img
+            src={imageSrc}
+            alt={card.id}
+            className="w-full h-full object-cover"
+            style={{ transform: 'scale(1.15)' }}
+          />
+        </div>
+      );
+    }
     return (
       <img
         src={imageSrc}
