@@ -51,6 +51,7 @@ const CARD_IMAGES: Record<string, string> = {
   'three-musketeers': '/three-musketeers.png',
   'zappies': '/zappies.png',
   'witch': '/witch.png',
+  'evo-witch': '/evo-witch.png',
   'balloon': '/balloon.png',
   'berserker': '/berserker.png',
   'cannon-cart': '/cannon-cart.png',
