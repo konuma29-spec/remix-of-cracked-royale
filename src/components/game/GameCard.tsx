@@ -62,8 +62,8 @@ export function GameCard({
           isEvolved && 'ring-2 ring-amber-400 shadow-lg shadow-amber-500/50'
         )}
         style={card.rarity === 'legendary' ? {
-          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-          transform: 'scale(1.2)'
+          clipPath: 'polygon(50% 5%, 95% 25%, 95% 75%, 50% 95%, 5% 75%, 5% 25%)',
+          transform: 'scale(1.1)'
         } : undefined}
         onClick={() => onClick?.()}
       >
