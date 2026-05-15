@@ -25,6 +25,7 @@ const CARD_IMAGES: Record<string, string> = {
   'evo-firecracker': '/evo-firecracker.png',
   'goblin-gang': '/goblin-gang.png',
   'goblin-giant': '/goblin-giant.png',
+  'evo-goblin-giant': '/evo-goblin-giant.png',
   'minion-horde': '/minion-horde.png',
   'rascals': '/rascals.png',
   'skeleton-barrel': '/skeleton-barrel.png',
