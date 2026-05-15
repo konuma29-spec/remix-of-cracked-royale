@@ -129,6 +129,9 @@ export function CardIcon({ card, imageClassName, emojiClassName, className }: Ca
   const imageSrc = CARD_IMAGES[card.id] ?? CARD_IMAGES[baseId];
   const isLegendary = (card as any)?.rarity === 'legendary';
   
+  // Card-specific scale adjustments for legendary cards
+  const legendaryScale = baseId === 'princess' ? 1.2 : 1.05;
+  
   if (imageSrc) {
     if (isLegendary) {
       return (
@@ -142,7 +145,7 @@ export function CardIcon({ card, imageClassName, emojiClassName, className }: Ca
             src={imageSrc}
             alt={card.id}
             className="w-full h-full object-cover"
-            style={{ transform: 'scale(1.05)' }}
+            style={{ transform: `scale(${legendaryScale})` }}
           />
         </div>
       );
