@@ -61,6 +61,9 @@ export function GameCard({
           onClick && 'cursor-pointer hover:scale-105 hover:-translate-y-1',
           isEvolved && 'ring-2 ring-amber-400 shadow-lg shadow-amber-500/50'
         )}
+        style={card.rarity === 'legendary' ? {
+          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
+        } : undefined}
         onClick={() => onClick?.()}
       >
         {/* Card art area - fills full card */}
@@ -68,6 +71,7 @@ export function GameCard({
           className="w-full h-full flex items-center justify-center rounded-md overflow-hidden absolute inset-0"
           style={{
             background: `linear-gradient(135deg, ${card.color}40, ${card.color}20)`,
+            clipPath: card.rarity === 'legendary' ? 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' : undefined
           }}
         >
           <CardIcon
