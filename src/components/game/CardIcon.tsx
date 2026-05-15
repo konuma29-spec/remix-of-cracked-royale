@@ -62,6 +62,7 @@ const CARD_IMAGES: Record<string, string> = {
   'cannon-cart': '/cannon-cart.png',
   'dark-prince': '/dark-prince.png',
   'electro-dragon': '/electro-dragon.png',
+  'evo-electro-dragon': '/evo-electro-dragon.png',
   'golem': '/golem.png',
   'elixir-golem': '/elixir-golem.png',
   'executioner': '/executioner.png',
