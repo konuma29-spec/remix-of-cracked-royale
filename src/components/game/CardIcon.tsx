@@ -135,7 +135,7 @@ export function CardIcon({ card, imageClassName, emojiClassName, className }: Ca
         <div
           className={`relative w-full h-full ${imageClassName ?? className ?? ''}`}
           style={{
-            clipPath: 'polygon(50% 12%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
+            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
           }}
         >
           <img
