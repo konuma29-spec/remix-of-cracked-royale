@@ -393,6 +393,18 @@ export function Arena({
     onArenaClick({ x, y });
   };
 
+  // Determine when to show king tower health bars
+  const playerKingTower = gameState.playerTowers.find(t => t.type === "king");
+  const enemyKingTower = gameState.enemyTowers.find(t => t.type === "king");
+  const playerPrincessesDamaged = gameState.playerTowers.filter(t => t.type === "princess").some(t => t.health < t.maxHealth);
+  const enemyPrincessesDamaged = gameState.enemyTowers.filter(t => t.type === "princess").some(t => t.health < t.maxHealth);
+  
+  // Show player king health bar if king has taken damage OR if any princess tower is damaged
+  const shouldShowPlayerKingHealth = playerKingTower ? (playerKingTower.health < playerKingTower.maxHealth || playerPrincessesDamaged) : false;
+  
+  // Show enemy king health bar if king has taken damage OR if any princess tower is damaged
+  const shouldShowEnemyKingHealth = enemyKingTower ? (enemyKingTower.health < enemyKingTower.maxHealth || enemyPrincessesDamaged) : false;
+
   // Parse arena color for theming
   const arenaColor = arenaTheme?.color || "#1e3a5f";
 
@@ -562,12 +574,20 @@ export function Arena({
       {gameState.playerTowers
         .filter((t) => t.health > 0)
         .map((tower) => (
-          <Tower key={tower.id} tower={tower} />
+          <Tower 
+            key={tower.id} 
+            tower={tower}
+            shouldShowHealthBar={tower.type === "king" ? shouldShowPlayerKingHealth : true}
+          />
         ))}
       {gameState.enemyTowers
         .filter((t) => t.health > 0)
         .map((tower) => (
-          <Tower key={tower.id} tower={tower} />
+          <Tower 
+            key={tower.id} 
+            tower={tower}
+            shouldShowHealthBar={tower.type === "king" ? shouldShowEnemyKingHealth : true}
+          />
         ))}
 
       {/* Spawn Effects */}

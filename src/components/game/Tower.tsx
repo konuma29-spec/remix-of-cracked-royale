@@ -8,9 +8,10 @@ import princessTowerPlayerImg from "@/assets/princess-tower-player.png";
 
 interface TowerProps {
   tower: TowerType;
+  shouldShowHealthBar?: boolean; // Override default health bar visibility
 }
 
-export function Tower({ tower }: TowerProps) {
+export function Tower({ tower, shouldShowHealthBar = true }: TowerProps) {
   const [isAttacking, setIsAttacking] = useState(false);
   const healthPercent = (tower.health / tower.maxHealth) * 100;
   const isDestroyed = tower.health <= 0;
@@ -37,6 +38,11 @@ export function Tower({ tower }: TowerProps) {
 
   // For player's king tower, show health above to avoid being covered by UI
   const showHealthAbove = tower.type === "king" && tower.owner === "player";
+  
+  // For king towers, only show health bar if king has taken damage or shouldShowHealthBar is explicitly true
+  const shouldShowKingHealthBar = tower.type === "king" 
+    ? shouldShowHealthBar || tower.health < tower.maxHealth
+    : true;
 
   return (
     <div
@@ -65,7 +71,7 @@ export function Tower({ tower }: TowerProps) {
       )}
 
       {/* Health bar ABOVE tower for player king tower */}
-      {!isDestroyed && showHealthAbove && (
+      {!isDestroyed && showHealthAbove && shouldShowKingHealthBar && (
         <div className="w-full mb-1 px-1">
           <div className="health-bar-container h-2 relative">
             <div
@@ -165,7 +171,7 @@ export function Tower({ tower }: TowerProps) {
       })()}
 
       {/* Health bar BELOW tower for all other towers */}
-      {!isDestroyed && !showHealthAbove && (
+      {!isDestroyed && !showHealthAbove && (tower.type !== "king" || shouldShowKingHealthBar) && (
         <div className="w-full mt-1 px-1">
           <div className="health-bar-container h-2 relative">
             <div
