@@ -52,9 +52,9 @@ export function GameCard({
       {/* Card box */}
       <div
         className={cn(
-          'game-card relative flex flex-col items-center justify-between p-1 border-2 transition-all duration-200',
+          'game-card relative flex flex-col items-center justify-between p-1 transition-all duration-200',
           sizeClasses[size],
-          `bg-gradient-to-b ${rarityStyles[card.rarity]}`,
+          card.rarity === 'legendary' ? '' : `border-2 bg-gradient-to-b ${rarityStyles[card.rarity]}`,
           !canAfford && 'disabled grayscale-[50%]',
           isSelected && 'selected ring-2 ring-primary scale-110 -translate-y-2',
           rarityGlow[card.rarity],
@@ -70,7 +70,7 @@ export function GameCard({
         <div
           className="w-full h-full flex items-center justify-center rounded-md overflow-hidden absolute inset-0"
           style={{
-            background: `linear-gradient(135deg, ${card.color}40, ${card.color}20)`,
+            background: card.rarity === 'legendary' ? 'transparent' : `linear-gradient(135deg, ${card.color}40, ${card.color}20)`,
             clipPath: card.rarity === 'legendary' ? 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' : undefined
           }}
         >
@@ -89,14 +89,15 @@ export function GameCard({
         </div>
 
         {/* Rarity indicator */}
-        <div className={cn(
-          'absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 rounded-full z-10',
-          card.rarity === 'common' && 'bg-slate-400',
-          card.rarity === 'rare' && 'bg-blue-400',
-          card.rarity === 'epic' && 'bg-purple-400',
-          card.rarity === 'legendary' && 'bg-amber-400',
-          card.rarity === 'champion' && 'bg-pink-400'
-        )} />
+        {card.rarity !== 'legendary' && (
+          <div className={cn(
+            'absolute -bottom-1 left-1/2 -translate-x-1/2 w-4 h-1 rounded-full z-10',
+            card.rarity === 'common' && 'bg-slate-400',
+            card.rarity === 'rare' && 'bg-blue-400',
+            card.rarity === 'epic' && 'bg-purple-400',
+            card.rarity === 'champion' && 'bg-pink-400'
+          )} />
+        )}
 
         {/* Evolution indicator */}
         {isEvolved && (
