@@ -54,24 +54,20 @@ export function GameCard({
         className={cn(
           'game-card relative flex flex-col items-center justify-between p-1 transition-all duration-200',
           sizeClasses[size],
-          card.rarity === 'legendary' ? '' : `border-2 bg-gradient-to-b ${rarityStyles[card.rarity]}`,
+          `border-2 bg-gradient-to-b ${rarityStyles[card.rarity]}`,
           !canAfford && 'disabled grayscale-[50%]',
           isSelected && 'selected ring-2 ring-primary scale-110 -translate-y-2',
           rarityGlow[card.rarity],
           onClick && 'cursor-pointer hover:scale-105 hover:-translate-y-1',
           isEvolved && 'ring-2 ring-amber-400 shadow-lg shadow-amber-500/50'
         )}
-        style={card.rarity === 'legendary' ? {
-          clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)'
-        } : undefined}
         onClick={() => onClick?.()}
       >
         {/* Card art area - fills full card */}
         <div
           className="w-full h-full flex items-center justify-center rounded-md overflow-hidden absolute inset-0"
           style={{
-            background: card.rarity === 'legendary' ? 'transparent' : `linear-gradient(135deg, ${card.color}40, ${card.color}20)`,
-            clipPath: card.rarity === 'legendary' ? 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' : undefined
+            background: `linear-gradient(135deg, ${card.color}40, ${card.color}20)`
           }}
         >
           <CardIcon

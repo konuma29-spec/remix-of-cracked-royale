@@ -127,29 +127,7 @@ interface CardIconProps {
 export function CardIcon({ card, imageClassName, emojiClassName, className }: CardIconProps) {
   const baseId = card.id.replace(/^evo-/, '');
   const imageSrc = CARD_IMAGES[card.id] ?? CARD_IMAGES[baseId];
-  const isLegendary = (card as any)?.rarity === 'legendary';
-  
-  // Card-specific scale adjustments for legendary cards
-  const legendaryScale = baseId === 'princess' ? 1.2 : 1.05;
-  
   if (imageSrc) {
-    if (isLegendary) {
-      return (
-        <div
-          className={`relative w-full h-full ${imageClassName ?? className ?? ''}`}
-          style={{
-            clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)',
-          }}
-        >
-          <img
-            src={imageSrc}
-            alt={card.id}
-            className="w-full h-full object-cover"
-            style={{ transform: `scale(${legendaryScale})` }}
-          />
-        </div>
-      );
-    }
     return (
       <img
         src={imageSrc}
